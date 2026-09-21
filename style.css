@@ -1,7 +1,3 @@
-/* ==============================
-   CONFIGURACIÓN GENERAL
-================================ */
-
 * {
     margin: 0;
     padding: 0;
@@ -10,91 +6,63 @@
 
 body {
     min-height: 100vh;
-    font-family: Arial, Helvetica, sans-serif;
     background: #050505;
     color: #ffffff;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-family: Arial, Helvetica, sans-serif;
 
     padding: 20px;
 }
 
-
-/* ==============================
-   CONTENEDOR
-================================ */
-
 .rifa-container {
     width: 100%;
-    max-width: 700px;
+    max-width: 750px;
+    margin: auto;
 }
 
-
-/* ==============================
-   TARJETA PRINCIPAL
-================================ */
-
 .rifa-card {
-    position: relative;
-
-    text-align: center;
-
-    padding: 60px 35px;
-
     background: #0b0b0b;
 
     border: 1px solid #b88a2d;
 
     border-radius: 20px;
 
+    padding: 50px 25px;
+
+    text-align: center;
+
     box-shadow:
-        0 0 25px rgba(184, 138, 45, 0.15),
-        inset 0 0 30px rgba(184, 138, 45, 0.03);
+        0 0 30px rgba(212, 175, 55, 0.12);
 }
 
 
-/* ==============================
-   TITULO RIFA
-================================ */
+/* =========================
+   TITULOS
+========================= */
 
 .etiqueta {
+    color: #d4af37;
+
     font-size: 52px;
+
     font-weight: 900;
 
     letter-spacing: 8px;
 
-    color: #d4af37;
-
-    margin-bottom: 15px;
+    margin-bottom: 12px;
 }
-
-
-/* ==============================
-   NOMBRE DEL ARTÍCULO
-   MISMO TAMAÑO QUE RIFA
-================================ */
 
 #nombreArticulo {
     font-size: 52px;
+
     font-weight: 900;
 
     letter-spacing: 3px;
-
-    color: #ffffff;
-
-    text-align: center;
 
     line-height: 1.1;
 
     text-transform: uppercase;
 }
-
-
-/* ==============================
-   LINEA DORADA
-================================ */
 
 .linea-dorada {
     width: 120px;
@@ -106,98 +74,309 @@ body {
 }
 
 
-/* ==============================
+/* =========================
    INFORMACIÓN
-================================ */
+========================= */
 
 .informacion {
     display: flex;
 
     justify-content: center;
 
-    gap: 80px;
+    gap: 70px;
 
-    margin-top: 35px;
+    margin-bottom: 40px;
 }
-
 
 .dato {
     display: flex;
+
     flex-direction: column;
 
-    gap: 10px;
+    gap: 8px;
 }
 
-
 .titulo-dato {
-    font-size: 14px;
+    color: #d4af37;
+
+    font-size: 13px;
+
+    font-weight: bold;
 
     letter-spacing: 3px;
+}
 
-    color: #d4af37;
+.valor-dato {
+    font-size: 23px;
 
     font-weight: bold;
 }
 
 
-.valor-dato {
-    font-size: 25px;
+/* =========================
+   NUMEROS
+========================= */
 
-    font-weight: 700;
-
+.titulo-numeros {
     color: #ffffff;
+
+    font-size: 24px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 8px;
+}
+
+.instruccion {
+    color: #999999;
+
+    font-size: 14px;
+
+    margin-bottom: 25px;
 }
 
 
-/* ==============================
-   BOTÓN
-================================ */
+/* =========================
+   CUADRÍCULA 00 - 99
+========================= */
 
-.boton-participar {
-    margin-top: 45px;
+.numeros-grid {
+    display: grid;
 
-    padding: 17px 35px;
+    grid-template-columns: repeat(10, 1fr);
+
+    gap: 8px;
+
+    max-width: 650px;
+
+    margin: auto;
+}
+
+.numero {
+    aspect-ratio: 1 / 1;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    background: #151515;
+
+    border: 1px solid #555;
+
+    border-radius: 8px;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.numero:hover {
+    border-color: #d4af37;
+
+    color: #d4af37;
+
+    transform: translateY(-2px);
+}
+
+.numero.seleccionado {
+    background: #d4af37;
+
+    color: #050505;
+
+    border-color: #d4af37;
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.85);
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    z-index: 1000;
+}
+
+.modal.activo {
+    display: flex;
+}
+
+.modal-contenido {
+    width: 100%;
+
+    max-width: 450px;
+
+    background: #0d0d0d;
 
     border: 1px solid #d4af37;
 
-    border-radius: 50px;
+    border-radius: 20px;
+
+    padding: 35px 25px;
+
+    position: relative;
+}
+
+.modal-contenido h2 {
+    text-align: center;
+
+    color: #d4af37;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 20px;
+}
+
+.cerrar {
+    position: absolute;
+
+    right: 15px;
+
+    top: 10px;
+
+    background: none;
+
+    border: none;
+
+    color: #ffffff;
+
+    font-size: 32px;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   NUMERO SELECCIONADO
+========================= */
+
+.numero-seleccionado {
+    text-align: center;
+
+    padding: 15px;
+
+    margin-bottom: 25px;
+
+    background: #151515;
+
+    border-radius: 10px;
+
+    color: #cccccc;
+}
+
+.numero-seleccionado strong {
+    color: #d4af37;
+
+    font-size: 28px;
+}
+
+
+/* =========================
+   FORMULARIO
+========================= */
+
+form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+label {
+    color: #d4af37;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    margin-top: 8px;
+}
+
+input,
+select {
+    width: 100%;
+
+    padding: 14px;
+
+    border-radius: 8px;
+
+    border: 1px solid #555;
+
+    background: #171717;
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+input:focus,
+select:focus {
+    border-color: #d4af37;
+}
+
+
+/* =========================
+   BOTÓN
+========================= */
+
+.boton-confirmar {
+    margin-top: 20px;
+
+    padding: 16px;
+
+    border: none;
+
+    border-radius: 30px;
 
     background: #d4af37;
 
     color: #050505;
 
-    font-size: 16px;
+    font-size: 15px;
 
     font-weight: 900;
 
-    letter-spacing: 2px;
+    letter-spacing: 1px;
 
     cursor: pointer;
-
-    transition: all 0.3s ease;
 }
 
-
-.boton-participar:hover {
+.boton-confirmar:hover {
     background: #ffffff;
-
-    border-color: #ffffff;
-
-    transform: translateY(-3px);
-
-    box-shadow:
-        0 8px 25px rgba(212, 175, 55, 0.25);
 }
 
 
-/* ==============================
-   CELULARES
-================================ */
+/* =========================
+   CELULAR
+========================= */
 
 @media (max-width: 600px) {
 
     .rifa-card {
-        padding: 45px 20px;
+        padding: 40px 15px;
     }
 
     .etiqueta,
@@ -214,11 +393,24 @@ body {
     }
 
     .informacion {
-        gap: 35px;
+        gap: 30px;
     }
 
     .valor-dato {
-        font-size: 20px;
+        font-size: 19px;
     }
 
+    .numeros-grid {
+        gap: 5px;
+    }
+
+    .numero {
+        border-radius: 6px;
+
+        font-size: 13px;
+    }
+
+    .titulo-numeros {
+        font-size: 20px;
+    }
 }
