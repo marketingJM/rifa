@@ -13,15 +13,11 @@
 
     <main class="rifa-container">
 
-        <div class="rifa-card">
+        <section class="rifa-card">
 
-            <div class="etiqueta">
-                RIFA
-            </div>
+            <div class="etiqueta">RIFA</div>
 
-            <h1 id="nombreArticulo">
-                CADENA DE ORO 18K
-            </h1>
+            <h1 id="nombreArticulo">CADENA DE ORO 18K</h1>
 
             <div class="linea-dorada"></div>
 
@@ -39,15 +35,23 @@
 
             </div>
 
-            <button class="boton-participar" onclick="participar()">
-                ELEGIR MI NÚMERO
-            </button>
+            <h2 class="titulo-numeros">ELIGE TU NÚMERO</h2>
 
-        </div>
+            <p class="instruccion">
+                Selecciona uno de los números disponibles
+            </p>
+
+            <div id="numeros" class="numeros-grid"></div>
+
+        </section>
 
     </main>
 
-    <script src="script.js"></script>
 
-</body>
-</html>
+    <!-- VENTANA PARA LOS DATOS DEL CLIENTE -->
+
+    <div id="modal" class="modal">
+
+        <div class="modal-contenido">
+
+            <button id="cerrar
