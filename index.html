@@ -403,8 +403,6 @@
 
   <div class="container">
 
-    <!-- TITULO -->
-
     <div class="titulo-rifa">
 
       <div class="rifa">
@@ -417,9 +415,6 @@
       </div>
 
     </div>
-
-
-    <!-- INFORMACION -->
 
     <div class="info-boxes">
 
@@ -435,7 +430,6 @@
 
       </div>
 
-
       <div class="info-box">
 
         <div class="info-label">
@@ -450,11 +444,9 @@
 
     </div>
 
-
     <div class="selecciona">
       Selecciona el número que deseas reservar
     </div>
-
 
     <div class="leyenda">
 
@@ -470,17 +462,14 @@
 
     </div>
 
-
-    <!-- NUMEROS -->
-
     <div id="numeros" class="numeros"></div>
 
   </div>
 
 
-  <!-- =================================
+  <!-- =========================
        MODAL
-  ================================== -->
+  ========================= -->
 
   <div id="overlay" class="overlay">
 
@@ -493,18 +482,15 @@
         ×
       </button>
 
-
       <div class="modal-titulo">
         RESERVAR NÚMERO
       </div>
-
 
       <div
         id="numeroSeleccionado"
         class="numero-seleccionado">
         00
       </div>
-
 
       <!-- NOMBRE -->
 
@@ -599,7 +585,6 @@
 
           </select>
 
-
           <input
             id="telefono"
             class="telefono-input"
@@ -613,7 +598,7 @@
       </div>
 
 
-      <!-- ESTADO DEL PAGO -->
+      <!-- TIPO DE PAGO -->
 
       <div class="campo">
 
@@ -654,7 +639,6 @@
 
       </button>
 
-
       <div
         id="mensaje"
         class="mensaje">
@@ -665,9 +649,9 @@
   </div>
 
 
-  <!-- =========================================
-       FIREBASE + JAVASCRIPT
-  ========================================== -->
+  <!-- =========================
+       FIREBASE
+  ========================= -->
 
   <script type="module">
 
@@ -686,7 +670,7 @@
 
 
     /* =========================================
-       TU FIREBASE
+       CONFIGURACIÓN REAL DE TU FIREBASE
     ========================================== */
 
     const firebaseConfig = {
@@ -715,7 +699,7 @@
 
 
     /* =========================================
-       INICIALIZAR FIREBASE
+       INICIAR FIREBASE
     ========================================== */
 
     const app =
@@ -726,23 +710,11 @@
 
 
     /* =========================================
-       WHATSAPP DEL ADMINISTRADOR
-
-       ⚠️ CAMBIA ESTE NÚMERO
-
-       Debe ir:
-       código de país + número
-
-       SIN +
-       SIN espacios
-       SIN guiones
-
-       Ejemplo Colombia:
-       573001234567
+       TU WHATSAPP
     ========================================== */
 
     const WHATSAPP_ADMIN =
-      "573001234567";
+      "573226082281";
 
 
     /* =========================================
@@ -786,7 +758,7 @@
 
 
     /* =========================================
-       CREAR LOS 100 NUMEROS
+       CREAR NUMEROS 00 - 99
     ========================================== */
 
     function crearNumeros() {
@@ -820,7 +792,7 @@
 
 
     /* =========================================
-       CARGAR NUMEROS OCUPADOS
+       CARGAR RESERVAS DE FIREBASE
     ========================================== */
 
     async function cargarReservas() {
@@ -840,21 +812,8 @@
           const datos =
             documento.data();
 
-          /*
-           * Usamos el ID del documento.
-           *
-           * Ejemplo:
-           * numeros / 15
-           */
-
           const numero =
             documento.id.padStart(2, "0");
-
-          /*
-           * Solo marcamos ocupado si
-           * el documento realmente tiene
-           * información de una reserva.
-           */
 
           if (
             datos &&
@@ -874,18 +833,16 @@
       } catch (error) {
 
         console.error(
-          "Error cargando números:",
+          "Error cargando reservas:",
           error
         );
-
-        mensajeErrorInicial();
 
       }
     }
 
 
     /* =========================================
-       MARCAR OCUPADO
+       MARCAR NUMERO OCUPADO
     ========================================== */
 
     function marcarOcupado(numero) {
@@ -900,19 +857,6 @@
       boton.classList.add("ocupado");
 
       boton.disabled = true;
-    }
-
-
-    /* =========================================
-       MENSAJE DE ERROR INICIAL
-    ========================================== */
-
-    function mensajeErrorInicial() {
-
-      console.error(
-        "No se pudieron cargar las reservas."
-      );
-
     }
 
 
@@ -932,6 +876,7 @@
       if (
         boton.classList.contains("ocupado")
       ) {
+
         return;
       }
 
@@ -966,7 +911,6 @@
         nombre.focus();
 
       }, 150);
-
     }
 
 
@@ -1064,8 +1008,7 @@
 
       if (valido) {
 
-        btnConfirmar.disabled =
-          false;
+        btnConfirmar.disabled = false;
 
         btnConfirmar.classList.add(
           "activo"
@@ -1073,20 +1016,18 @@
 
       } else {
 
-        btnConfirmar.disabled =
-          true;
+        btnConfirmar.disabled = true;
 
         btnConfirmar.classList.remove(
           "activo"
         );
 
       }
-
     }
 
 
     /* =========================================
-       CONFIRMAR RESERVA
+       CONFIRMAR
     ========================================== */
 
     btnConfirmar.addEventListener(
@@ -1104,7 +1045,6 @@
       ) {
 
         return;
-
       }
 
 
@@ -1139,17 +1079,9 @@
 
       try {
 
-        /*
-         * IMPORTANTE:
-         *
-         * El documento será:
-         *
-         * numeros / 15
-         *
-         * numeros / 16
-         *
-         * etc.
-         */
+        /* ===============================
+           DOCUMENTO DEL NUMERO
+        =============================== */
 
         const referencia =
           doc(
@@ -1159,13 +1091,9 @@
           );
 
 
-        /*
-         * TRANSACCION
-         *
-         * Si dos personas intentan
-         * reservar el mismo número,
-         * Firebase solo permitirá una.
-         */
+        /* ===============================
+           TRANSACCION
+        =============================== */
 
         await runTransaction(
           db,
@@ -1176,6 +1104,12 @@
                 referencia
               );
 
+
+            /*
+             * Si el documento ya existe,
+             * significa que el número
+             * ya fue reservado.
+             */
 
             if (
               documento.exists()
@@ -1210,12 +1144,6 @@
                 tipoPago:
                   pago,
 
-                /*
-                 * Dejamos también estado
-                 * para mantener compatibilidad
-                 * con tu estructura actual.
-                 */
-
                 estado:
                   pago,
 
@@ -1229,20 +1157,19 @@
         );
 
 
-        /* =================================
+        /* ===============================
            RESERVA EXITOSA
-        ================================== */
+        =============================== */
 
         marcarOcupado(numero);
-
 
         mensaje.textContent =
           "Reserva registrada. Abriendo WhatsApp...";
 
 
-        /*
-         * MENSAJE DE WHATSAPP
-         */
+        /* ===============================
+           MENSAJE WHATSAPP
+        =============================== */
 
         const texto =
           "Hola, quiero confirmar mi reserva.\n\n" +
@@ -1273,10 +1200,6 @@
           encodeURIComponent(texto);
 
 
-        /*
-         * Abrir WhatsApp
-         */
-
         setTimeout(() => {
 
           window.location.href =
@@ -1284,10 +1207,6 @@
 
         }, 700);
 
-
-        /*
-         * Limpiar
-         */
 
         numeroActual = null;
 
@@ -1314,10 +1233,6 @@
         );
 
 
-        /* =================================
-           NUMERO YA RESERVADO
-        ================================== */
-
         if (
           error.message ===
           "NUMERO_OCUPADO"
@@ -1327,7 +1242,6 @@
             "⚠️ Este número ya fue reservado por otra persona.";
 
           marcarOcupado(numero);
-
 
         } else {
 
@@ -1348,14 +1262,12 @@
           "CONFIRMAR";
 
         procesando = false;
-
       }
-
     }
 
 
     /* =========================================
-       INICIAR
+       INICIAR PAGINA
     ========================================== */
 
     cargarReservas();
