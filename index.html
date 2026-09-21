@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
 
@@ -10,514 +9,406 @@
     <title>RIFA</title>
 
     <style>
-
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
-            padding: 0;
-            background: #000000;
-            color: #D4AF37;
             font-family: Arial, Helvetica, sans-serif;
+            background: #050505;
+            color: #ffffff;
+            min-height: 100vh;
         }
 
-        .contenedor {
+        .container {
             width: 100%;
             max-width: 1000px;
             margin: auto;
-            padding: 35px 18px 50px;
-            text-align: center;
+            padding: 35px 20px 60px;
         }
 
-        /* TÍTULO */
+        /* ENCABEZADO */
 
-        h1 {
-            margin: 0;
-            font-size: 55px;
+        .header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .titulo {
+            font-size: clamp(42px, 8vw, 75px);
             font-weight: 900;
             letter-spacing: 8px;
-            color: #D4AF37;
-        }
-
-        /* ARTÍCULO */
-
-        .articulo {
-            margin-top: 12px;
-            font-size: 55px;
-            font-weight: 900;
-            line-height: 1.1;
-            color: #D4AF37;
+            color: #d4af37;
+            line-height: 1;
             text-transform: uppercase;
         }
 
-        /* DATOS */
-
-        .datos {
-            margin-top: 25px;
-            margin-bottom: 35px;
-            font-size: 21px;
-            font-weight: bold;
+        .articulo {
+            font-size: clamp(42px, 8vw, 75px);
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #ffffff;
+            margin-top: 10px;
+            line-height: 1;
+            text-transform: uppercase;
         }
 
-        .fecha,
-        .valor {
-            margin: 10px 0;
+        .datos-rifa {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 30px;
         }
 
-        /* CONTENEDOR DE NÚMEROS */
-
-        .numeros {
-            width: 100%;
-            max-width: 850px;
-            margin: auto;
-
-            display: grid;
-
-            grid-template-columns: repeat(10, 1fr);
-
-            gap: 9px;
+        .dato {
+            border: 1px solid #d4af37;
+            padding: 14px 25px;
+            border-radius: 10px;
+            min-width: 180px;
+            background: #0d0d0d;
         }
 
-        /* NÚMERO */
+        .dato span {
+            display: block;
+            color: #aaa;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
 
-        .numero {
-            min-height: 58px;
+        .dato strong {
+            color: #d4af37;
+            font-size: 22px;
+        }
 
+        /* INFORMACIÓN */
+
+        .instruccion {
+            text-align: center;
+            margin: 35px 0 20px;
+            color: #ddd;
+            font-size: 17px;
+        }
+
+        .leyenda {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .leyenda-item {
             display: flex;
             align-items: center;
+            gap: 7px;
+        }
+
+        .punto {
+            width: 13px;
+            height: 13px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .libre {
+            background: #d4af37;
+        }
+
+        .ocupado {
+            background: #555;
+        }
+
+        /* CUADRÍCULA */
+
+        .numeros {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+
+        .numero {
+            aspect-ratio: 1 / 1;
+            border: 1px solid #d4af37;
+            background: linear-gradient(145deg, #161616, #080808);
+            color: #d4af37;
+            border-radius: 10px;
+            display: flex;
             justify-content: center;
-
-            background: #080808;
-
-            border: 1px solid #D4AF37;
-
-            border-radius: 8px;
-
-            color: #D4AF37;
-
-            font-size: 20px;
-            font-weight: 800;
-
+            align-items: center;
+            font-size: clamp(14px, 3vw, 23px);
+            font-weight: bold;
             cursor: pointer;
-
-            transition:
-                transform 0.15s ease,
-                background 0.15s ease,
-                color 0.15s ease;
+            transition: 0.2s;
+            user-select: none;
         }
 
         .numero:hover {
-            background: #D4AF37;
-            color: #000000;
-            transform: scale(1.04);
+            background: #d4af37;
+            color: #000;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(212,175,55,0.25);
         }
 
-        /* NÚMERO RESERVADO */
-
-        .numero.reservado {
-            background: #272727;
-            border-color: #555555;
-            color: #777777;
+        .numero.ocupado-numero {
+            background: #292929;
+            border-color: #444;
+            color: #777;
             cursor: not-allowed;
-            text-decoration: line-through;
         }
 
-        .numero.reservado:hover {
-            background: #272727;
-            color: #777777;
+        .numero.ocupado-numero:hover {
             transform: none;
+            box-shadow: none;
+            background: #292929;
+            color: #777;
         }
 
         /* MODAL */
 
         .modal {
             display: none;
-
             position: fixed;
-
             z-index: 9999;
-
-            left: 0;
-            top: 0;
-
-            width: 100%;
-            height: 100%;
-
-            background: rgba(0, 0, 0, 0.88);
-
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            justify-content: center;
+            align-items: center;
             padding: 20px;
         }
 
         .modal.activo {
             display: flex;
-
-            align-items: center;
-            justify-content: center;
         }
 
         .modal-contenido {
-
             width: 100%;
-            max-width: 430px;
-
-            background: #0b0b0b;
-
-            border: 1px solid #D4AF37;
-
+            max-width: 450px;
+            background: #101010;
+            border: 1px solid #d4af37;
             border-radius: 18px;
-
-            padding: 30px 25px;
-
-            box-shadow:
-                0 0 35px rgba(212, 175, 55, 0.25);
-
+            padding: 30px;
+            box-shadow: 0 0 50px rgba(212,175,55,0.15);
             position: relative;
         }
 
         .cerrar {
-
             position: absolute;
-
-            top: 10px;
+            top: 12px;
             right: 18px;
-
-            font-size: 30px;
-
-            color: #D4AF37;
-
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 28px;
             cursor: pointer;
         }
 
         .modal-titulo {
-
-            font-size: 28px;
-
-            font-weight: 900;
-
-            margin-bottom: 8px;
+            text-align: center;
+            color: #d4af37;
+            font-size: 30px;
+            margin-bottom: 10px;
         }
 
         .numero-seleccionado {
-
-            font-size: 42px;
-
-            font-weight: 900;
-
+            text-align: center;
+            font-size: 45px;
+            font-weight: bold;
+            color: white;
             margin-bottom: 25px;
         }
 
-        /* FORMULARIO */
-
-        label {
-
-            display: block;
-
-            text-align: left;
-
-            margin-bottom: 7px;
-
-            color: #D4AF37;
-
-            font-weight: bold;
+        .campo {
+            margin-bottom: 20px;
         }
 
-        input,
-        select {
+        .campo label {
+            display: block;
+            color: #ccc;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
 
+        .campo input,
+        .campo select {
             width: 100%;
-
             padding: 14px;
-
-            margin-bottom: 18px;
-
+            background: #050505;
+            border: 1px solid #555;
             border-radius: 8px;
-
-            border: 1px solid #D4AF37;
-
-            background: #000000;
-
             color: white;
-
             font-size: 16px;
-
             outline: none;
         }
 
-        input:focus,
-        select:focus {
-
-            box-shadow:
-                0 0 10px rgba(212, 175, 55, 0.25);
+        .campo input:focus,
+        .campo select:focus {
+            border-color: #d4af37;
         }
 
-        select option {
-
-            background: #000000;
-
-            color: white;
-        }
-
-        /* BOTÓN */
-
-        .btn-confirmar {
-
+        .boton-confirmar {
             width: 100%;
-
             padding: 16px;
-
             border: none;
-
             border-radius: 10px;
-
-            background: #D4AF37;
-
-            color: #000000;
-
+            background: #d4af37;
+            color: #000;
             font-size: 17px;
-
-            font-weight: 900;
-
+            font-weight: bold;
             cursor: pointer;
-
+            text-transform: uppercase;
             transition: 0.2s;
         }
 
-        .btn-confirmar:hover {
-
-            background: #f0d36a;
-
+        .boton-confirmar:hover {
+            background: #f0d267;
             transform: translateY(-1px);
         }
 
-        .btn-confirmar:disabled {
-
-            opacity: 0.6;
-
-            cursor: wait;
+        .boton-confirmar:disabled {
+            background: #555;
+            color: #999;
+            cursor: not-allowed;
         }
-
-        /* MENSAJE */
 
         .mensaje {
-
-            margin-top: 20px;
-
-            font-size: 15px;
-
-            color: #ffffff;
-        }
-
-        /* LEYENDA */
-
-        .leyenda {
-
-            margin-top: 30px;
-
-            display: flex;
-
-            justify-content: center;
-
-            gap: 25px;
-
-            flex-wrap: wrap;
-
+            text-align: center;
+            margin-top: 15px;
+            color: #d4af37;
             font-size: 14px;
-
-            color: #ffffff;
         }
 
-        .leyenda-item {
-
-            display: flex;
-
-            align-items: center;
-
-            gap: 7px;
-        }
-
-        .cuadro {
-
-            width: 15px;
-            height: 15px;
-
-            border-radius: 4px;
-
-            display: inline-block;
-        }
-
-        .disponible {
-
-            background: #080808;
-
-            border: 1px solid #D4AF37;
-        }
-
-        .ocupado {
-
-            background: #272727;
-
-            border: 1px solid #555555;
-        }
-
-        /* MÓVIL */
+        /* CELULAR */
 
         @media (max-width: 600px) {
 
-            .contenedor {
-                padding: 25px 10px 40px;
-            }
-
-            h1,
-            .articulo {
-                font-size: 35px;
-            }
-
-            h1 {
-                letter-spacing: 5px;
-            }
-
-            .datos {
-                font-size: 17px;
+            .container {
+                padding: 25px 12px 50px;
             }
 
             .numeros {
-                gap: 5px;
+                gap: 6px;
             }
 
             .numero {
-                min-height: 43px;
+                border-radius: 7px;
+            }
 
-                font-size: 15px;
+            .datos-rifa {
+                gap: 10px;
+            }
 
-                border-radius: 6px;
+            .dato {
+                min-width: 140px;
+                padding: 12px;
+            }
+
+            .dato strong {
+                font-size: 18px;
             }
 
             .modal-contenido {
-                padding: 25px 18px;
+                padding: 25px 20px;
             }
         }
-
     </style>
-
 </head>
-
 
 <body>
 
+<div class="container">
 
-    <div class="contenedor">
+    <!-- ENCABEZADO -->
 
+    <header class="header">
 
-        <!-- TÍTULO -->
-
-        <h1>RIFA</h1>
-
-
-        <!-- NOMBRE DEL ARTÍCULO -->
-
-        <!-- CAMBIA ESTE TEXTO POR EL PREMIO -->
-
-        <div class="articulo">
-            ARTÍCULO
+        <div class="titulo">
+            RIFA
         </div>
 
+        <div class="articulo" id="nombreArticulo">
+            CADENA DE ORO 18K
+        </div>
 
-        <!-- FECHA Y VALOR -->
+        <div class="datos-rifa">
 
-        <div class="datos">
-
-            <!-- CAMBIA LA FECHA -->
-
-            <div class="fecha">
-                📅 FECHA: 00/00/0000
+            <div class="dato">
+                <span>Fecha del sorteo</span>
+                <strong id="fechaRifa">
+                    19 DE JUNIO
+                </strong>
             </div>
 
-
-            <!-- CAMBIA EL VALOR -->
-
-            <div class="valor">
-                💰 VALOR: $00.000
+            <div class="dato">
+                <span>Valor por número</span>
+                <strong id="valorRifa">
+                    $70.000
+                </strong>
             </div>
 
         </div>
 
+    </header>
 
-        <!-- NÚMEROS -->
 
-        <div
-            class="numeros"
-            id="numeros">
+    <div class="instruccion">
+        Selecciona el número que deseas reservar
+    </div>
+
+
+    <div class="leyenda">
+
+        <div class="leyenda-item">
+            <span class="punto libre"></span>
+            Disponible
         </div>
 
-
-        <!-- LEYENDA -->
-
-        <div class="leyenda">
-
-            <div class="leyenda-item">
-
-                <span class="cuadro disponible"></span>
-
-                Disponible
-
-            </div>
-
-
-            <div class="leyenda-item">
-
-                <span class="cuadro ocupado"></span>
-
-                Reservado
-
-            </div>
-
+        <div class="leyenda-item">
+            <span class="punto ocupado"></span>
+            Ocupado
         </div>
-
 
     </div>
 
 
+    <!-- NÚMEROS -->
 
-    <!-- MODAL -->
+    <div class="numeros" id="numeros">
+    </div>
 
-    <div
-        class="modal"
-        id="modal">
-
-        <div class="modal-contenido">
+</div>
 
 
-            <div
-                class="cerrar"
-                id="cerrar">
-                ×
-            </div>
+<!-- MODAL -->
+
+<div class="modal" id="modal">
+
+    <div class="modal-contenido">
+
+        <button class="cerrar" id="cerrar">
+            ×
+        </button>
+
+        <div class="modal-titulo">
+            RESERVAR NÚMERO
+        </div>
+
+        <div class="numero-seleccionado" id="numeroSeleccionado">
+            00
+        </div>
 
 
-            <div class="modal-titulo">
-
-                Número seleccionado
-
-            </div>
-
-
-            <div
-                class="numero-seleccionado"
-                id="numeroSeleccionado">
-
-                00
-
-            </div>
-
-
-            <!-- NOMBRE -->
+        <div class="campo">
 
             <label for="nombre">
-
                 Nombre completo
-
             </label>
 
             <input
@@ -527,386 +418,538 @@
                 autocomplete="name"
             >
 
+        </div>
 
-            <!-- TIPO DE PAGO -->
+
+        <div class="campo">
 
             <label for="tipoPago">
-
                 Estado del pago
-
             </label>
 
             <select id="tipoPago">
 
-                <option value="Pago">
-                    Pago
+                <option value="">
+                    Selecciona una opción
+                </option>
+
+                <option value="Pagó">
+                    Pagó
                 </option>
 
                 <option value="Abono">
                     Abono
                 </option>
 
-                <option value="Solo separar">
-                    Solo separar
+                <option value="Solo separo">
+                    Solo separo
                 </option>
 
             </select>
 
-
-            <!-- BOTÓN -->
-
-            <button
-                class="btn-confirmar"
-                id="confirmar">
-
-                CONFIRMAR Y CONTINUAR
-
-            </button>
-
-
-            <div
-                class="mensaje"
-                id="mensaje">
-            </div>
-
-
         </div>
+
+
+        <button
+            class="boton-confirmar"
+            id="confirmar"
+        >
+            CONFIRMAR
+        </button>
+
+        <div
+            class="mensaje"
+            id="mensaje"
+        ></div>
 
     </div>
 
+</div>
 
 
-    <!-- FIREBASE -->
+<!-- FIREBASE -->
 
-    <script type="module">
+<script type="module">
 
+    import {
+        initializeApp
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
-        /*
-        =====================================================
-        CONFIGURACIÓN DE FIREBASE
-        =====================================================
-        */
-
-        import {
-            initializeApp
-        } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js";
-
-
-        import {
-            getFirestore,
-            doc,
-            getDoc,
-            setDoc,
-            runTransaction
-        } from "https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js";
+    import {
+        getFirestore,
+        doc,
+        getDoc,
+        setDoc,
+        runTransaction
+    } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
 
 
-        /*
-        CONFIGURACIÓN DE TU PROYECTO
-        */
+    /* =====================================================
+       CONFIGURACIÓN FIREBASE
+       ===================================================== */
 
-        const firebaseConfig = {
+    const firebaseConfig = {
 
-            apiKey: "AIzaSyBlQ6Q9eJoJDaksUbq00DAMWxCIYVJSc",
+        apiKey: "AIzaSyBIqQ6Q9eJoJDaksUbG00DAMWxCIHYVJSc",
 
-            authDomain: "yo-rifo-e6643.firebaseapp.com",
+        authDomain:
+            "yo-rifo-e6643.firebaseapp.com",
 
-            projectId: "yo-rifo-e6643",
+        projectId:
+            "yo-rifo-e6643",
 
-            storageBucket: "yo-rifo-e6643.firebasestorage.app",
+        storageBucket:
+            "yo-rifo-e6643.firebasestorage.app",
 
-            messagingSenderId: "106958662416",
+        messagingSenderId:
+            "1069586862416",
 
-            appId: "1:106958662416:web:99ea2d0a194f55d3bf1c55",
+        appId:
+            "1:1069586862416:web:99ea2d0a194f55d3bf1c55",
 
-            measurementId: "G-92N04K32V4"
-
-        };
-
-
-        /*
-        INICIAR FIREBASE
-        */
-
-        const app = initializeApp(firebaseConfig);
-
-        const db = getFirestore(app);
+        measurementId:
+            "G-91M04K32V4"
+    };
 
 
+    /* INICIAR FIREBASE */
 
-        /*
-        =====================================================
-        ELEMENTOS DE LA PÁGINA
-        =====================================================
-        */
+    const app = initializeApp(firebaseConfig);
 
-        const contenedorNumeros =
-            document.getElementById("numeros");
+    const db = getFirestore(app);
 
 
-        const modal =
-            document.getElementById("modal");
+    /* =====================================================
+       CONFIGURACIÓN DE LA RIFA
+       ===================================================== */
+
+    const CONFIG = {
+
+        coleccion:
+            "numeros",
+
+        telefonoWhatsApp:
+            "573226082281"
+
+    };
 
 
-        const cerrar =
-            document.getElementById("cerrar");
+    /* =====================================================
+       ELEMENTOS
+       ===================================================== */
+
+    const contenedorNumeros =
+        document.getElementById("numeros");
+
+    const modal =
+        document.getElementById("modal");
+
+    const cerrar =
+        document.getElementById("cerrar");
+
+    const numeroSeleccionado =
+        document.getElementById("numeroSeleccionado");
+
+    const nombre =
+        document.getElementById("nombre");
+
+    const tipoPago =
+        document.getElementById("tipoPago");
+
+    const confirmar =
+        document.getElementById("confirmar");
+
+    const mensaje =
+        document.getElementById("mensaje");
 
 
-        const numeroSeleccionado =
-            document.getElementById("numeroSeleccionado");
+    let numeroActual = null;
 
 
-        const nombre =
-            document.getElementById("nombre");
+    /* =====================================================
+       CREAR LOS 100 NÚMEROS
+       ===================================================== */
 
+    function crearNumeros() {
 
-        const tipoPago =
-            document.getElementById("tipoPago");
+        contenedorNumeros.innerHTML = "";
 
-
-        const confirmar =
-            document.getElementById("confirmar");
-
-
-        const mensaje =
-            document.getElementById("mensaje");
-
-
-
-        /*
-        NÚMERO ACTUAL SELECCIONADO
-        */
-
-        let numeroActual = null;
-
-
-
-        /*
-        =====================================================
-        CREAR LOS 100 NÚMEROS
-        =====================================================
-        */
-
-        for (
-            let i = 0;
-            i <= 99;
-            i++
-        ) {
+        for (let i = 0; i <= 99; i++) {
 
             const numero =
-                i.toString().padStart(2, "0");
-
+                String(i).padStart(2, "0");
 
             const boton =
                 document.createElement("div");
 
-
             boton.className = "numero";
 
+            boton.id =
+                `numero-${numero}`;
 
-            boton.textContent = numero;
-
-
-            boton.dataset.numero = numero;
-
+            boton.textContent =
+                numero;
 
             boton.addEventListener(
                 "click",
-                () => seleccionarNumero(numero, boton)
+                () => seleccionarNumero(numero)
             );
 
-
             contenedorNumeros.appendChild(boton);
-
         }
 
+        cargarNumerosOcupados();
+    }
 
 
-        /*
-        =====================================================
-        COMPROBAR ESTADOS EN FIREBASE
-        =====================================================
-        */
+    /* =====================================================
+       CARGAR NÚMEROS OCUPADOS
+       ===================================================== */
 
-        async function cargarEstados() {
+    async function cargarNumerosOcupados() {
 
-            for (
-                let i = 0;
-                i <= 99;
-                i++
-            ) {
+        for (let i = 0; i <= 99; i++) {
 
-                const numero =
-                    i.toString().padStart(2, "0");
-
-
-                const referencia =
-                    doc(db, "numeros", numero);
-
-
-                try {
-
-                    const resultado =
-                        await getDoc(referencia);
-
-
-                    if (
-                        resultado.exists()
-                    ) {
-
-                        const datos =
-                            resultado.data();
-
-
-                        if (
-                            datos.Estado &&
-                            datos.Estado !== "disponible"
-                        ) {
-
-                            marcarReservado(numero);
-
-                        }
-
-                    }
-
-                } catch (error) {
-
-                    console.error(
-                        "Error leyendo número:",
-                        numero,
-                        error
-                    );
-
-                }
-
-            }
-
-        }
-
-
-
-        /*
-        MARCAR NÚMERO COMO RESERVADO
-        */
-
-        function marcarReservado(numero) {
-
-            const boton =
-                document.querySelector(
-                    `[data-numero="${numero}"]`
-                );
-
-
-            if (boton) {
-
-                boton.classList.add("reservado");
-
-                boton.title =
-                    "Número no disponible";
-
-            }
-
-        }
-
-
-
-        /*
-        =====================================================
-        SELECCIONAR NÚMERO
-        =====================================================
-        */
-
-        async function seleccionarNumero(
-            numero,
-            boton
-        ) {
-
-
-            /*
-            Si ya está visualmente reservado,
-            no permitimos seleccionarlo.
-            */
-
-            if (
-                boton.classList.contains("reservado")
-            ) {
-
-                return;
-
-            }
-
-
-            /*
-            Comprobar directamente en Firebase
-            */
+            const numero =
+                String(i).padStart(2, "0");
 
             try {
 
                 const referencia =
-                    doc(db, "numeros", numero);
-
+                    doc(
+                        db,
+                        CONFIG.coleccion,
+                        numero
+                    );
 
                 const resultado =
                     await getDoc(referencia);
-
 
                 if (resultado.exists()) {
 
                     const datos =
                         resultado.data();
 
-
                     if (
-                        datos.Estado &&
-                        datos.Estado !== "disponible"
+                        datos.estado &&
+                        datos.estado !== "libre"
                     ) {
 
-                        marcarReservado(numero);
-
-
-                        alert(
-                            "Este número ya fue reservado."
-                        );
-
-
-                        return;
-
+                        marcarOcupado(numero);
                     }
-
                 }
 
+            } catch (error) {
 
-                numeroActual = numero;
+                console.error(
+                    "Error leyendo número:",
+                    numero,
+                    error
+                );
+            }
+        }
+    }
 
 
-                numeroSeleccionado.textContent =
-                    numero;
+    /* =====================================================
+       MARCAR OCUPADO
+       ===================================================== */
+
+    function marcarOcupado(numero) {
+
+        const elemento =
+            document.getElementById(
+                `numero-${numero}`
+            );
+
+        if (!elemento) return;
+
+        elemento.classList.add(
+            "ocupado-numero"
+        );
+
+        elemento.dataset.ocupado =
+            "true";
+    }
 
 
-                nombre.value = "";
+    /* =====================================================
+       SELECCIONAR NÚMERO
+       ===================================================== */
+
+    async function seleccionarNumero(numero) {
+
+        const elemento =
+            document.getElementById(
+                `numero-${numero}`
+            );
+
+        if (
+            elemento &&
+            elemento.dataset.ocupado === "true"
+        ) {
+
+            alert(
+                "Este número ya está ocupado."
+            );
+
+            return;
+        }
 
 
-                tipoPago.value =
-                    "Pago";
+        /* Verificar nuevamente en Firebase */
+
+        try {
+
+            const referencia =
+                doc(
+                    db,
+                    CONFIG.coleccion,
+                    numero
+                );
+
+            const resultado =
+                await getDoc(referencia);
+
+            if (resultado.exists()) {
+
+                const datos =
+                    resultado.data();
+
+                if (
+                    datos.estado &&
+                    datos.estado !== "libre"
+                ) {
+
+                    marcarOcupado(numero);
+
+                    alert(
+                        "Este número acaba de ser ocupado. Por favor selecciona otro."
+                    );
+
+                    return;
+                }
+            }
+
+        } catch (error) {
+
+            console.error(error);
+
+            alert(
+                "No se pudo verificar el número. Intenta nuevamente."
+            );
+
+            return;
+        }
+
+
+        numeroActual = numero;
+
+        numeroSeleccionado.textContent =
+            numero;
+
+        nombre.value = "";
+
+        tipoPago.value = "";
+
+        mensaje.textContent = "";
+
+        confirmar.disabled = false;
+
+        modal.classList.add("activo");
+
+        setTimeout(() => {
+            nombre.focus();
+        }, 200);
+    }
+
+
+    /* =====================================================
+       CERRAR MODAL
+       ===================================================== */
+
+    function cerrarModal() {
+
+        modal.classList.remove(
+            "activo"
+        );
+
+        numeroActual = null;
+    }
+
+
+    cerrar.addEventListener(
+        "click",
+        cerrarModal
+    );
+
+
+    modal.addEventListener(
+        "click",
+        (event) => {
+
+            if (
+                event.target === modal
+            ) {
+                cerrarModal();
+            }
+        }
+    );
+
+
+    /* =====================================================
+       CONFIRMAR RESERVA
+       ===================================================== */
+
+    confirmar.addEventListener(
+        "click",
+        async () => {
+
+            if (!numeroActual) {
+                return;
+            }
+
+
+            const nombreCliente =
+                nombre.value.trim();
+
+            const estadoPago =
+                tipoPago.value;
+
+
+            if (!nombreCliente) {
+
+                alert(
+                    "Por favor escribe tu nombre."
+                );
+
+                nombre.focus();
+
+                return;
+            }
+
+
+            if (!estadoPago) {
+
+                alert(
+                    "Selecciona el estado del pago."
+                );
+
+                tipoPago.focus();
+
+                return;
+            }
+
+
+            confirmar.disabled = true;
+
+            mensaje.textContent =
+                "Guardando reserva...";
+
+
+            try {
+
+                const referencia =
+                    doc(
+                        db,
+                        CONFIG.coleccion,
+                        numeroActual
+                    );
+
+
+                /*
+                 * TRANSACTION:
+                 * Evita que dos personas
+                 * puedan tomar el mismo número
+                 * al mismo tiempo.
+                 */
+
+                await runTransaction(
+                    db,
+                    async (transaction) => {
+
+                        const documento =
+                            await transaction.get(
+                                referencia
+                            );
+
+
+                        if (
+                            documento.exists()
+                        ) {
+
+                            const datos =
+                                documento.data();
+
+
+                            if (
+                                datos.estado &&
+                                datos.estado !== "libre"
+                            ) {
+
+                                throw new Error(
+                                    "NUMERO_OCUPADO"
+                                );
+                            }
+                        }
+
+
+                        transaction.set(
+                            referencia,
+                            {
+
+                                numero:
+                                    numeroActual,
+
+                                nombre:
+                                    nombreCliente,
+
+                                tipoPago:
+                                    estadoPago,
+
+                                estado:
+                                    "ocupado",
+
+                                fecha:
+                                    new Date()
+                                        .toISOString()
+                            }
+                        );
+
+                    }
+                );
+
+
+                /* Marcar visualmente */
+
+                marcarOcupado(
+                    numeroActual
+                );
+
+
+                /* Mensaje WhatsApp */
+
+                const textoWhatsApp =
+                    `Hola, quiero reservar el número ${numeroActual} de la rifa.%0A%0A` +
+                    `Nombre: ${nombreCliente}%0A` +
+                    `Estado del pago: ${estadoPago}%0A%0A` +
+                    `Quedo atento(a) a la confirmación.`;
+
+                
+                const urlWhatsApp =
+                    `https://wa.me/${CONFIG.telefonoWhatsApp}?text=${textoWhatsApp}`;
 
 
                 mensaje.textContent =
-                    "";
+                    "Reserva registrada. Abriendo WhatsApp...";
 
 
-                confirmar.disabled =
-                    false;
+                setTimeout(() => {
 
+                    window.location.href =
+                        urlWhatsApp;
 
-                modal.classList.add(
-                    "activo"
-                );
-
-
-                setTimeout(
-                    () => nombre.focus(),
-                    100
-                );
+                }, 700);
 
 
             } catch (error) {
@@ -914,327 +957,45 @@
                 console.error(error);
 
 
-                alert(
-                    "No fue posible comprobar el número. Intenta nuevamente."
-                );
-
-            }
-
-        }
-
-
-
-        /*
-        =====================================================
-        CERRAR MODAL
-        =====================================================
-        */
-
-        cerrar.addEventListener(
-            "click",
-            cerrarModal
-        );
-
-
-        modal.addEventListener(
-            "click",
-            function(event) {
-
                 if (
-                    event.target === modal
+                    error.message ===
+                    "NUMERO_OCUPADO"
                 ) {
 
-                    cerrarModal();
-
-                }
-
-            }
-        );
-
-
-        function cerrarModal() {
-
-            modal.classList.remove(
-                "activo"
-            );
-
-            numeroActual = null;
-
-        }
-
-
-
-        /*
-        =====================================================
-        CONFIRMAR RESERVA
-        =====================================================
-        */
-
-        confirmar.addEventListener(
-            "click",
-            async function() {
-
-
-                if (!numeroActual) {
-
-                    return;
-
-                }
-
-
-                const nombreCliente =
-                    nombre.value.trim();
-
-
-                const pago =
-                    tipoPago.value;
-
-
-                /*
-                VALIDAR NOMBRE
-                */
-
-                if (!nombreCliente) {
+                    marcarOcupado(
+                        numeroActual
+                    );
 
                     alert(
-                        "Por favor escribe tu nombre."
+                        "Este número ya fue reservado por otra persona. Elige otro número."
                     );
 
+                } else {
 
-                    nombre.focus();
-
-
-                    return;
+                    alert(
+                        "No se pudo guardar la reserva. Revisa la conexión con Firebase."
+                    );
 
                 }
 
-
-                /*
-                DESACTIVAR BOTÓN
-                */
 
                 confirmar.disabled =
-                    true;
+                    false;
 
-
-                mensaje.textContent =
-                    "Procesando reserva...";
-
-
-                const numero =
-                    numeroActual;
-
-
-                const referencia =
-                    doc(
-                        db,
-                        "numeros",
-                        numero
-                    );
-
-
-                try {
-
-
-                    /*
-                    =================================================
-                    TRANSACCIÓN DE FIREBASE
-                    =================================================
-
-                    Esto comprueba nuevamente el estado
-                    justo antes de guardar.
-
-                    */
-
-                    await runTransaction(
-                        db,
-                        async (transaction) => {
-
-
-                            const resultado =
-                                await transaction.get(
-                                    referencia
-                                );
-
-
-                            if (
-                                resultado.exists()
-                            ) {
-
-                                const datos =
-                                    resultado.data();
-
-
-                                if (
-                                    datos.Estado &&
-                                    datos.Estado !== "disponible"
-                                ) {
-
-                                    throw new Error(
-                                        "NUMERO_OCUPADO"
-                                    );
-
-                                }
-
-                            }
-
-
-                            /*
-                            GUARDAR RESERVA
-                            */
-
-                            transaction.set(
-                                referencia,
-                                {
-
-                                    Numero: numero,
-
-                                    Estado: "reservado",
-
-                                    Nombre: nombreCliente,
-
-                                    "Tipo de pago": pago,
-
-                                    fechaReserva:
-                                        new Date()
-                                            .toISOString()
-
-                                }
-                            );
-
-                        }
-                    );
-
-
-                    /*
-                    =================================================
-                    RESERVA EXITOSA
-                    =================================================
-                    */
-
-                    marcarReservado(
-                        numero
-                    );
-
-
-                    /*
-                    MENSAJE PARA WHATSAPP
-                    */
-
-                    const textoWhatsApp =
-
-                        "Hola, quiero reservar el número " +
-                        numero +
-                        " de la rifa.%0A%0A" +
-
-                        "Nombre: " +
-                        encodeURIComponent(
-                            nombreCliente
-                        ) +
-                        "%0A" +
-
-                        "Estado del pago: " +
-                        encodeURIComponent(
-                            pago
-                        );
-
-
-                    /*
-                    NÚMERO DE WHATSAPP
-                    */
-
-                    const telefono =
-                        "573226082281";
-
-
-                    const urlWhatsApp =
-                        "https://wa.me/" +
-                        telefono +
-                        "?text=" +
-                        textoWhatsApp;
-
-
-                    mensaje.textContent =
-                        "Número reservado correctamente.";
-
-
-                    /*
-                    Abrir WhatsApp
-                    */
-
-                    setTimeout(
-                        () => {
-
-                            window.location.href =
-                                urlWhatsApp;
-
-                        },
-                        500
-                    );
-
-
-                } catch (error) {
-
-
-                    console.error(
-                        error
-                    );
-
-
-                    if (
-                        error.message ===
-                        "NUMERO_OCUPADO"
-                    ) {
-
-                        marcarReservado(
-                            numero
-                        );
-
-
-                        mensaje.textContent =
-                            "Este número acaba de ser reservado por otra persona.";
-
-
-                        alert(
-                            "Lo sentimos, este número ya fue reservado."
-                        );
-
-
-                    } else {
-
-                        mensaje.textContent =
-                            "Ocurrió un error al guardar la reserva.";
-
-
-                        alert(
-                            "No se pudo guardar la reserva. Intenta nuevamente."
-                        );
-
-                    }
-
-
-                    confirmar.disabled =
-                        false;
-
-                }
-
+                mensaje.textContent = "";
             }
-        );
+
+        }
+    );
 
 
+    /* =====================================================
+       INICIAR
+       ===================================================== */
 
-        /*
-        =====================================================
-        CARGAR ESTADOS AL ABRIR LA PÁGINA
-        =====================================================
-        */
+    crearNumeros();
 
-        cargarEstados();
-
-
-    </script>
-
+</script>
 
 </body>
-
 </html>
