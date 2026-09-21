@@ -6,48 +6,7 @@
 
   <title>Rifa Cadena de Oro 18K</title>
 
-  <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore,
-      collection,
-      doc,
-      getDocs,
-      runTransaction,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    // =========================================================
-    // CONFIGURACIÓN DE FIREBASE
-    // =========================================================
-
-    const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_PROYECTO.firebaseapp.com",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_PROYECTO.appspot.com",
-      messagingSenderId: "TU_SENDER_ID",
-      appId: "TU_APP_ID"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    window.firebaseDB = db;
-    window.firebaseFirestore = {
-      collection,
-      doc,
-      getDocs,
-      runTransaction,
-      serverTimestamp
-    };
-
-    window.dispatchEvent(new Event("firebaseReady"));
-  </script>
-
   <style>
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -68,16 +27,16 @@
       padding: 35px 20px 60px;
     }
 
-    /* ================================
-       ENCABEZADO
-    ================================= */
+    /* =========================
+       TITULO
+    ========================= */
 
     .titulo-rifa {
       text-align: center;
       margin-bottom: 35px;
     }
 
-    .titulo-rifa .rifa {
+    .rifa {
       color: #d8af32;
       font-size: 48px;
       font-weight: 800;
@@ -85,7 +44,7 @@
       margin-bottom: 5px;
     }
 
-    .titulo-rifa .titulo {
+    .titulo {
       color: #fff;
       font-size: 42px;
       font-weight: 800;
@@ -93,9 +52,9 @@
       letter-spacing: 2px;
     }
 
-    /* ================================
-       INFORMACIÓN
-    ================================= */
+    /* =========================
+       INFORMACION
+    ========================= */
 
     .info-boxes {
       display: flex;
@@ -128,9 +87,9 @@
       font-weight: bold;
     }
 
-    /* ================================
-       TEXTO
-    ================================= */
+    /* =========================
+       LEYENDA
+    ========================= */
 
     .selecciona {
       text-align: center;
@@ -161,17 +120,17 @@
       display: inline-block;
     }
 
-    .circulo.disponible {
+    .disponible {
       background: #d8af32;
     }
 
-    .circulo.ocupado {
+    .ocupado {
       background: #555;
     }
 
-    /* ================================
-       GRID DE NÚMEROS
-    ================================= */
+    /* =========================
+       NUMEROS
+    ========================= */
 
     .numeros {
       display: grid;
@@ -211,14 +170,14 @@
       color: #aaa;
     }
 
-    /* ================================
+    /* =========================
        MODAL
-    ================================= */
+    ========================= */
 
     .overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.82);
+      background: rgba(0, 0, 0, .82);
       display: none;
       justify-content: center;
       align-items: center;
@@ -239,7 +198,7 @@
       border-radius: 32px;
       padding: 45px 40px 35px;
       position: relative;
-      box-shadow: 0 0 30px rgba(216,175,50,.12);
+      box-shadow: 0 0 30px rgba(216, 175, 50, .12);
     }
 
     .cerrar {
@@ -260,7 +219,6 @@
       font-size: 42px;
       font-weight: 400;
       margin-bottom: 25px;
-      white-space: nowrap;
     }
 
     .numero-seleccionado {
@@ -300,9 +258,9 @@
       border-color: #d8af32;
     }
 
-    /* ================================
-       TELÉFONO
-    ================================= */
+    /* =========================
+       TELEFONO
+    ========================= */
 
     .telefono-container {
       display: flex;
@@ -310,7 +268,7 @@
     }
 
     .codigo-pais {
-      flex: 0 0 145px;
+      flex: 0 0 140px;
       padding: 0 8px !important;
     }
 
@@ -318,9 +276,9 @@
       flex: 1;
     }
 
-    /* ================================
-       BOTÓN
-    ================================= */
+    /* =========================
+       BOTON
+    ========================= */
 
     .btn-confirmar {
       width: 100%;
@@ -357,9 +315,9 @@
       min-height: 25px;
     }
 
-    /* ================================
+    /* =========================
        RESPONSIVE
-    ================================= */
+    ========================= */
 
     @media (max-width: 600px) {
 
@@ -367,17 +325,13 @@
         padding: 25px 20px 45px;
       }
 
-      .titulo-rifa .rifa {
+      .rifa {
         font-size: 38px;
         letter-spacing: 8px;
       }
 
-      .titulo-rifa .titulo {
+      .titulo {
         font-size: 32px;
-      }
-
-      .info-box {
-        width: 320px;
       }
 
       .selecciona {
@@ -391,7 +345,6 @@
       .numero {
         height: 48px;
         font-size: 17px;
-        border-radius: 10px;
       }
 
       .modal {
@@ -405,7 +358,6 @@
 
       .numero-seleccionado {
         font-size: 72px;
-        margin-bottom: 25px;
       }
 
       .campo label {
@@ -419,7 +371,7 @@
       }
 
       .codigo-pais {
-        flex-basis: 125px;
+        flex-basis: 120px;
       }
 
       .btn-confirmar {
@@ -440,11 +392,10 @@
       }
 
       .codigo-pais {
-        flex-basis: 110px;
+        flex-basis: 105px;
         font-size: 14px !important;
       }
     }
-
   </style>
 </head>
 
@@ -452,7 +403,7 @@
 
   <div class="container">
 
-    <!-- ENCABEZADO -->
+    <!-- TITULO -->
 
     <div class="titulo-rifa">
 
@@ -468,7 +419,7 @@
     </div>
 
 
-    <!-- INFORMACIÓN -->
+    <!-- INFORMACION -->
 
     <div class="info-boxes">
 
@@ -520,24 +471,24 @@
     </div>
 
 
-    <!-- NÚMEROS -->
+    <!-- NUMEROS -->
 
     <div id="numeros" class="numeros"></div>
 
   </div>
 
 
-  <!-- =========================================
+  <!-- =================================
        MODAL
-  ========================================== -->
+  ================================== -->
 
   <div id="overlay" class="overlay">
 
     <div class="modal">
 
       <button
-        class="cerrar"
         id="btnCerrar"
+        class="cerrar"
         type="button">
         ×
       </button>
@@ -572,7 +523,7 @@
       </div>
 
 
-      <!-- TELÉFONO -->
+      <!-- TELEFONO -->
 
       <div class="campo">
 
@@ -586,7 +537,7 @@
             id="codigoPais"
             class="codigo-pais">
 
-            <option value="+57" selected>
+            <option value="+57">
               🇨🇴 +57
             </option>
 
@@ -630,10 +581,6 @@
               🇺🇸 +1
             </option>
 
-            <option value="+1">
-              🇨🇦 +1
-            </option>
-
             <option value="+44">
               🇬🇧 +44
             </option>
@@ -670,11 +617,11 @@
 
       <div class="campo">
 
-        <label for="estadoPago">
+        <label for="tipoPago">
           Estado del pago
         </label>
 
-        <select id="estadoPago">
+        <select id="tipoPago">
 
           <option value="">
             Selecciona una opción
@@ -696,8 +643,6 @@
 
       </div>
 
-
-      <!-- CONFIRMAR -->
 
       <button
         id="btnConfirmar"
@@ -721,34 +666,88 @@
 
 
   <!-- =========================================
-       JAVASCRIPT
+       FIREBASE + JAVASCRIPT
   ========================================== -->
 
-  <script>
+  <script type="module">
 
-    let db = null;
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-    let numeroActual = null;
-
-    let procesando = false;
-
-
-    // =========================================================
-    // ESPERAR FIREBASE
-    // =========================================================
-
-    window.addEventListener("firebaseReady", () => {
-
-      db = window.firebaseDB;
-
-      cargarNumeros();
-
-    });
+    import {
+      getFirestore,
+      collection,
+      getDocs,
+      doc,
+      runTransaction,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-    // =========================================================
-    // ELEMENTOS
-    // =========================================================
+    /* =========================================
+       TU FIREBASE
+    ========================================== */
+
+    const firebaseConfig = {
+
+      apiKey:
+        "AIzaSyBIq6Q9eJoJDaksUbgOODAMWXcHIYVJYSc",
+
+      authDomain:
+        "yo-rifo-e6643.firebaseapp.com",
+
+      projectId:
+        "yo-rifo-e6643",
+
+      storageBucket:
+        "yo-rifo-e6643.firebasestorage.app",
+
+      messagingSenderId:
+        "1069586862416",
+
+      appId:
+        "1:1069586862416:web:99ea2d0a194f55d3bf1c55",
+
+      measurementId:
+        "G-91M04K32V4"
+    };
+
+
+    /* =========================================
+       INICIALIZAR FIREBASE
+    ========================================== */
+
+    const app =
+      initializeApp(firebaseConfig);
+
+    const db =
+      getFirestore(app);
+
+
+    /* =========================================
+       WHATSAPP DEL ADMINISTRADOR
+
+       ⚠️ CAMBIA ESTE NÚMERO
+
+       Debe ir:
+       código de país + número
+
+       SIN +
+       SIN espacios
+       SIN guiones
+
+       Ejemplo Colombia:
+       573001234567
+    ========================================== */
+
+    const WHATSAPP_ADMIN =
+      "573001234567";
+
+
+    /* =========================================
+       ELEMENTOS
+    ========================================== */
 
     const numerosContainer =
       document.getElementById("numeros");
@@ -768,8 +767,8 @@
     const telefono =
       document.getElementById("telefono");
 
-    const estadoPago =
-      document.getElementById("estadoPago");
+    const tipoPago =
+      document.getElementById("tipoPago");
 
     const btnConfirmar =
       document.getElementById("btnConfirmar");
@@ -781,9 +780,14 @@
       document.getElementById("mensaje");
 
 
-    // =========================================================
-    // CREAR NÚMEROS 00 - 99
-    // =========================================================
+    let numeroActual = null;
+
+    let procesando = false;
+
+
+    /* =========================================
+       CREAR LOS 100 NUMEROS
+    ========================================== */
 
     function crearNumeros() {
 
@@ -815,55 +819,74 @@
     }
 
 
-    // =========================================================
-    // CARGAR RESERVAS DESDE FIREBASE
-    // =========================================================
+    /* =========================================
+       CARGAR NUMEROS OCUPADOS
+    ========================================== */
 
-    async function cargarNumeros() {
+    async function cargarReservas() {
 
       crearNumeros();
 
-      if (!db) return;
-
       try {
 
-        const {
-          collection,
-          getDocs
-        } = window.firebaseFirestore;
+        const referencia =
+          collection(db, "numeros");
 
         const snapshot =
-          await getDocs(
-            collection(db, "reservas")
-          );
+          await getDocs(referencia);
 
-        snapshot.forEach(docSnap => {
+        snapshot.forEach((documento) => {
 
-          const data =
-            docSnap.data();
+          const datos =
+            documento.data();
 
-          if (!data.numero) return;
+          /*
+           * Usamos el ID del documento.
+           *
+           * Ejemplo:
+           * numeros / 15
+           */
 
-          marcarOcupado(
-            String(data.numero).padStart(2, "0")
-          );
+          const numero =
+            documento.id.padStart(2, "0");
+
+          /*
+           * Solo marcamos ocupado si
+           * el documento realmente tiene
+           * información de una reserva.
+           */
+
+          if (
+            datos &&
+            (
+              datos.nombre ||
+              datos.tipoPago ||
+              datos.estado
+            )
+          ) {
+
+            marcarOcupado(numero);
+
+          }
 
         });
 
       } catch (error) {
 
         console.error(
-          "Error cargando reservas:",
+          "Error cargando números:",
           error
         );
+
+        mensajeErrorInicial();
 
       }
     }
 
 
-    // =========================================================
-    // MARCAR NÚMERO COMO OCUPADO
-    // =========================================================
+    /* =========================================
+       MARCAR OCUPADO
+    ========================================== */
 
     function marcarOcupado(numero) {
 
@@ -877,13 +900,25 @@
       boton.classList.add("ocupado");
 
       boton.disabled = true;
+    }
+
+
+    /* =========================================
+       MENSAJE DE ERROR INICIAL
+    ========================================== */
+
+    function mensajeErrorInicial() {
+
+      console.error(
+        "No se pudieron cargar las reservas."
+      );
 
     }
 
 
-    // =========================================================
-    // ABRIR MODAL
-    // =========================================================
+    /* =========================================
+       ABRIR MODAL
+    ========================================== */
 
     function abrirModal(numero) {
 
@@ -892,8 +927,9 @@
           `.numero[data-numero="${numero}"]`
         );
 
+      if (!boton) return;
+
       if (
-        !boton ||
         boton.classList.contains("ocupado")
       ) {
         return;
@@ -910,34 +946,45 @@
 
       codigoPais.value = "+57";
 
-      estadoPago.value = "";
+      tipoPago.value = "";
 
       mensaje.textContent = "";
 
-      actualizarBoton();
+      btnConfirmar.disabled = true;
+
+      btnConfirmar.classList.remove(
+        "activo"
+      );
+
+      btnConfirmar.textContent =
+        "CONFIRMAR";
 
       overlay.classList.add("activo");
 
       setTimeout(() => {
+
         nombre.focus();
-      }, 100);
+
+      }, 150);
 
     }
 
 
-    // =========================================================
-    // CERRAR MODAL
-    // =========================================================
+    /* =========================================
+       CERRAR MODAL
+    ========================================== */
 
     function cerrarModal() {
 
       if (procesando) return;
 
-      overlay.classList.remove("activo");
+      overlay.classList.remove(
+        "activo"
+      );
 
       numeroActual = null;
-
     }
+
 
     btnCerrar.addEventListener(
       "click",
@@ -947,28 +994,35 @@
 
     overlay.addEventListener(
       "click",
-      function(event) {
+      (event) => {
 
-        if (event.target === overlay) {
+        if (
+          event.target === overlay
+        ) {
+
           cerrarModal();
+
         }
 
       }
     );
 
 
-    // =========================================================
-    // SOLO NÚMEROS EN TELÉFONO
-    // =========================================================
+    /* =========================================
+       VALIDAR TELEFONO
+    ========================================== */
 
     telefono.addEventListener(
       "input",
-      function() {
+      () => {
 
-        this.value =
-          this.value.replace(/\D/g, "");
+        telefono.value =
+          telefono.value.replace(
+            /\D/g,
+            ""
+          );
 
-        actualizarBoton();
+        validarFormulario();
 
       }
     );
@@ -976,21 +1030,21 @@
 
     nombre.addEventListener(
       "input",
-      actualizarBoton
+      validarFormulario
     );
 
 
-    estadoPago.addEventListener(
+    tipoPago.addEventListener(
       "change",
-      actualizarBoton
+      validarFormulario
     );
 
 
-    // =========================================================
-    // VALIDAR FORMULARIO
-    // =========================================================
+    /* =========================================
+       VALIDAR FORMULARIO
+    ========================================== */
 
-    function formularioValido() {
+    function validarFormulario() {
 
       const nombreValido =
         nombre.value.trim().length >= 2;
@@ -998,28 +1052,20 @@
       const telefonoValido =
         telefono.value.trim().length >= 7;
 
-      const estadoValido =
-        estadoPago.value !== "";
+      const pagoValido =
+        tipoPago.value !== "";
 
-      return (
+      const valido =
         nombreValido &&
         telefonoValido &&
-        estadoValido &&
-        numeroActual !== null
-      );
-
-    }
+        pagoValido &&
+        numeroActual !== null;
 
 
-    // =========================================================
-    // ACTUALIZAR BOTÓN
-    // =========================================================
+      if (valido) {
 
-    function actualizarBoton() {
-
-      if (formularioValido()) {
-
-        btnConfirmar.disabled = false;
+        btnConfirmar.disabled =
+          false;
 
         btnConfirmar.classList.add(
           "activo"
@@ -1027,7 +1073,8 @@
 
       } else {
 
-        btnConfirmar.disabled = true;
+        btnConfirmar.disabled =
+          true;
 
         btnConfirmar.classList.remove(
           "activo"
@@ -1038,9 +1085,9 @@
     }
 
 
-    // =========================================================
-    // CONFIRMAR RESERVA
-    // =========================================================
+    /* =========================================
+       CONFIRMAR RESERVA
+    ========================================== */
 
     btnConfirmar.addEventListener(
       "click",
@@ -1052,19 +1099,14 @@
 
       if (
         procesando ||
-        !formularioValido()
+        btnConfirmar.disabled ||
+        !numeroActual
       ) {
-        return;
-      }
-
-      if (!db) {
-
-        mensaje.textContent =
-          "Firebase todavía no está conectado.";
 
         return;
 
       }
+
 
       procesando = true;
 
@@ -1088,8 +1130,8 @@
       const telefonoCliente =
         telefono.value.trim();
 
-      const estado =
-        estadoPago.value;
+      const pago =
+        tipoPago.value;
 
       const telefonoCompleto =
         codigo + telefonoCliente;
@@ -1097,45 +1139,47 @@
 
       try {
 
-        const {
-          doc,
-          runTransaction,
-          serverTimestamp
-        } = window.firebaseFirestore;
-
-
         /*
-         * Cada número tiene su propio documento:
+         * IMPORTANTE:
          *
-         * reservas/00
-         * reservas/01
-         * reservas/02
-         * ...
-         * reservas/99
+         * El documento será:
          *
-         * Esto permite bloquear el número
-         * incluso si dos personas intentan
-         * reservarlo casi al mismo tiempo.
+         * numeros / 15
+         *
+         * numeros / 16
+         *
+         * etc.
          */
 
         const referencia =
           doc(
             db,
-            "reservas",
+            "numeros",
             numero
           );
 
 
+        /*
+         * TRANSACCION
+         *
+         * Si dos personas intentan
+         * reservar el mismo número,
+         * Firebase solo permitirá una.
+         */
+
         await runTransaction(
           db,
-          async transaction => {
+          async (transaction) => {
 
-            const existente =
+            const documento =
               await transaction.get(
                 referencia
               );
 
-            if (existente.exists()) {
+
+            if (
+              documento.exists()
+            ) {
 
               throw new Error(
                 "NUMERO_OCUPADO"
@@ -1148,22 +1192,32 @@
               referencia,
               {
 
-                numero: numero,
+                numero:
+                  numero,
 
                 nombre:
                   nombreCliente,
 
-                codigoPais:
+                "Codigo de país":
                   codigo,
 
-                telefono:
+                "Telefono":
                   telefonoCliente,
 
-                telefonoCompleto:
+                "Telefono completo":
                   telefonoCompleto,
 
+                tipoPago:
+                  pago,
+
+                /*
+                 * Dejamos también estado
+                 * para mantener compatibilidad
+                 * con tu estructura actual.
+                 */
+
                 estado:
-                  estado,
+                  pago,
 
                 fecha:
                   serverTimestamp()
@@ -1175,59 +1229,66 @@
         );
 
 
-        // Marcar visualmente
+        /* =================================
+           RESERVA EXITOSA
+        ================================== */
+
         marcarOcupado(numero);
 
 
-        // Mensaje
         mensaje.textContent =
           "Reserva registrada. Abriendo WhatsApp...";
 
 
         /*
-         * =====================================================
-         * WHATSAPP
-         * =====================================================
-         *
-         * CAMBIA ESTE NÚMERO por el WhatsApp que recibirá
-         * las reservas.
-         *
-         * IMPORTANTE:
-         * Escribirlo con código de país y SIN +, espacios
-         * ni guiones.
-         *
-         * Ejemplo Colombia:
-         * 573001234567
+         * MENSAJE DE WHATSAPP
          */
 
-        const ADMIN_WHATSAPP =
-          "573001234567";
+        const texto =
+          "Hola, quiero confirmar mi reserva.\n\n" +
 
+          "🎟️ Número: " +
+          numero +
+          "\n" +
 
-        const textoWhatsApp =
-          `Hola, quiero confirmar mi reserva.%0A%0A` +
-          `🎟️ Número: ${numero}%0A` +
-          `👤 Nombre: ${encodeURIComponent(nombreCliente)}%0A` +
-          `📱 WhatsApp: ${encodeURIComponent(telefonoCompleto)}%0A` +
-          `💰 Estado del pago: ${encodeURIComponent(estado)}%0A%0A` +
-          `Rifa Cadena de Oro 18K`;
+          "👤 Nombre: " +
+          nombreCliente +
+          "\n" +
+
+          "📱 WhatsApp: " +
+          telefonoCompleto +
+          "\n" +
+
+          "💰 Estado del pago: " +
+          pago +
+          "\n\n" +
+
+          "Rifa Cadena de Oro 18K";
 
 
         const urlWhatsApp =
-          `https://wa.me/${ADMIN_WHATSAPP}?text=${textoWhatsApp}`;
+          "https://wa.me/" +
+          WHATSAPP_ADMIN +
+          "?text=" +
+          encodeURIComponent(texto);
 
+
+        /*
+         * Abrir WhatsApp
+         */
 
         setTimeout(() => {
 
-          window.open(
-            urlWhatsApp,
-            "_blank"
-          );
+          window.location.href =
+            urlWhatsApp;
 
-        }, 800);
+        }, 700);
 
 
-        // Limpiar
+        /*
+         * Limpiar
+         */
+
         numeroActual = null;
 
 
@@ -1242,16 +1303,20 @@
 
           procesando = false;
 
-        }, 1200);
+        }, 1500);
 
 
       } catch (error) {
 
         console.error(
-          "Error:",
+          "Error reservando:",
           error
         );
 
+
+        /* =================================
+           NUMERO YA RESERVADO
+        ================================== */
 
         if (
           error.message ===
@@ -1259,19 +1324,25 @@
         ) {
 
           mensaje.textContent =
-            "⚠️ Este número acaba de ser reservado por otra persona.";
+            "⚠️ Este número ya fue reservado por otra persona.";
 
           marcarOcupado(numero);
+
 
         } else {
 
           mensaje.textContent =
-            "No se pudo registrar la reserva. Intenta nuevamente.";
+            "❌ No se pudo registrar la reserva. Revisa la conexión.";
 
         }
 
 
-        btnConfirmar.disabled = false;
+        btnConfirmar.disabled =
+          false;
+
+        btnConfirmar.classList.add(
+          "activo"
+        );
 
         btnConfirmar.textContent =
           "CONFIRMAR";
@@ -1281,6 +1352,13 @@
       }
 
     }
+
+
+    /* =========================================
+       INICIAR
+    ========================================== */
+
+    cargarReservas();
 
   </script>
 
