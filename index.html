@@ -373,17 +373,17 @@
 
     <div class="titulo-rifa">
       <div class="rifa">RIFA</div>
-      <div class="titulo">CADENA DE<br>ORO 18K</div>
+      <div class="titulo" id="tituloRifa">CADENA DE<br>ORO 18K</div>
     </div>
 
     <div class="info-boxes">
       <div class="info-box">
         <div class="info-label">FECHA DEL SORTEO</div>
-        <div class="info-value">19 DE JUNIO</div>
+        <div class="info-value" id="fechaSorteo">19 DE JUNIO</div>
       </div>
       <div class="info-box">
         <div class="info-label">VALOR POR NÚMERO</div>
-        <div class="info-value">$70.000</div>
+        <div class="info-value" id="valorNumero">$70.000</div>
       </div>
     </div>
 
@@ -395,6 +395,10 @@
     </div>
 
     <div id="numeros" class="numeros"></div>
+
+    <div style="text-align:center;margin-top:26px;">
+      <a href="admin.html" style="color:#555;font-size:12px;text-decoration:none;">Acceso administrador</a>
+    </div>
 
   </div>
 
@@ -504,23 +508,65 @@
     let numeroActual = null;
     let procesando = false;
     let vendedores = {}; // id -> nombre
+    let numerosData = {}; // numero -> datos de la reserva
+    let rifaConfig = { premio: "CADENA DE<br>ORO 18K", fecha: "19 DE JUNIO", precio: "$70.000", rangoInicio: 0, rangoFin: 99 };
+
+    function digitos() {
+      return Math.max(String(rifaConfig.rangoInicio).length, String(rifaConfig.rangoFin).length, 2);
+    }
 
     /* =========================================
-       CREAR NUMEROS 00 - 99
+       DIBUJAR LA GRILLA DE NÚMEROS
+       Se redibuja cada vez que cambia la configuración
+       (rango) o llegan nuevas reservas.
     ========================================== */
 
-    function crearNumeros() {
+    function renderGrid() {
       numerosContainer.innerHTML = "";
-      for (let i = 0; i <= 99; i++) {
-        const numero = String(i).padStart(2, "0");
+      const cifras = digitos();
+      for (let i = rifaConfig.rangoInicio; i <= rifaConfig.rangoFin; i++) {
+        const numero = String(i).padStart(cifras, "0");
         const boton = document.createElement("button");
         boton.type = "button";
         boton.className = "numero";
         boton.textContent = numero;
         boton.dataset.numero = numero;
+        if (numerosData[numero]) {
+          boton.classList.add("ocupado");
+          boton.disabled = true;
+        }
         boton.addEventListener("click", () => abrirModal(numero));
         numerosContainer.appendChild(boton);
       }
+    }
+
+    /* =========================================
+       ESCUCHAR CONFIGURACIÓN (colección "config",
+       documento "rifa"). La define el administrador.
+       Si no existe todavía, se usan valores por defecto.
+    ========================================== */
+
+    function escucharConfig() {
+      const referencia = doc(db, "config", "rifa");
+      onSnapshot(referencia, (snap) => {
+        if (snap.exists()) {
+          const datos = snap.data();
+          rifaConfig = {
+            premio: datos.premio || rifaConfig.premio,
+            fecha: datos.fecha || rifaConfig.fecha,
+            precio: datos.precio || rifaConfig.precio,
+            rangoInicio: (typeof datos.rangoInicio === "number") ? datos.rangoInicio : rifaConfig.rangoInicio,
+            rangoFin: (typeof datos.rangoFin === "number") ? datos.rangoFin : rifaConfig.rangoFin
+          };
+        }
+        document.getElementById("tituloRifa").innerHTML = rifaConfig.premio;
+        document.getElementById("fechaSorteo").textContent = rifaConfig.fecha;
+        document.getElementById("valorNumero").textContent = rifaConfig.precio;
+        document.title = "Rifa - " + rifaConfig.fecha;
+        renderGrid();
+      }, (error) => {
+        console.error("Error escuchando configuración:", error);
+      });
     }
 
     /* =========================================
@@ -532,22 +578,18 @@
     ========================================== */
 
     function escucharReservas() {
-      crearNumeros();
       const referencia = collection(db, "numeros");
       onSnapshot(referencia, (snapshot) => {
-        // Primero libera visualmente todos los números...
-        document.querySelectorAll(".numero").forEach((boton) => {
-          boton.classList.remove("ocupado");
-          boton.disabled = false;
-        });
-        // ...luego marca solo los que existen en Firestore.
+        numerosData = {};
         snapshot.forEach((documento) => {
           const datos = documento.data();
-          const numero = documento.id.padStart(2, "0");
+          const cifras = digitos();
+          const numero = documento.id.padStart(cifras, "0");
           if (datos && (datos.nombre || datos.tipoPago || datos.estado)) {
-            marcarOcupado(numero);
+            numerosData[numero] = datos;
           }
         });
+        renderGrid();
       }, (error) => {
         console.error("Error escuchando reservas:", error);
       });
@@ -755,6 +797,7 @@
        INICIAR PÁGINA
     ========================================== */
 
+    escucharConfig();
     escucharReservas();
     escucharVendedores();
 
