@@ -57,6 +57,11 @@
   .msg { text-align:center; font-size:13px; margin-top:12px; min-height:18px; color:#d8af32; }
   .msg.error { color:#e05a4a; }
 
+  .estado-pill { display:inline-block; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; }
+  .estado-pago { background: rgba(37,211,102,.18); color:#5fdc8f; }
+  .estado-abono { background: rgba(216,175,50,.2); color:#d8af32; }
+  .estado-separo { background: rgba(255,255,255,.08); color:#bbb; }
+
   #loginBox { max-width:380px; margin:80px auto 0; }
   #adminBox { display:none; }
 
@@ -121,6 +126,25 @@
         <tbody></tbody>
       </table>
       <div id="statsEmpty" class="empty" style="display:none">Sin reservas todavía.</div>
+    </div>
+
+    <div class="card">
+      <h2>Números vendidos</h2>
+      <p class="hint">A quién pertenece cada número y si pagó, abonó o solo separó.</p>
+      <label for="filtroEstado">Filtrar por estado</label>
+      <select id="filtroEstado">
+        <option value="">Todos</option>
+        <option value="Pagó">Pagó</option>
+        <option value="Abono">Abono</option>
+        <option value="Solo separo">Solo separó</option>
+      </select>
+      <div style="overflow-x:auto; margin-top:12px;">
+        <table id="detalleTable">
+          <thead><tr><th>N.º</th><th>Nombre</th><th>Teléfono</th><th>Vendedor</th><th>Estado</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div id="detalleEmpty" class="empty" style="display:none">Sin reservas todavía.</div>
     </div>
 
     <div class="card">
@@ -262,8 +286,47 @@
       snap.forEach((d) => { numerosData[d.id] = d.data(); });
       renderStats();
       renderCancelSelect();
+      renderDetalle();
     }));
   }
+
+  /* =========================================
+     DETALLE DE NÚMEROS VENDIDOS
+  ========================================== */
+
+  function claseEstado(estado) {
+    if (estado === "Pagó") return "estado-pago";
+    if (estado === "Abono") return "estado-abono";
+    return "estado-separo";
+  }
+
+  function renderDetalle() {
+    const filtro = $("filtroEstado").value;
+    const nums = Object.keys(numerosData).sort();
+    const filas = nums
+      .map((n) => ({ numero: n, ...numerosData[n] }))
+      .filter((rec) => {
+        const estado = rec.tipoPago || rec.estado || "";
+        return !filtro || estado === filtro;
+      });
+
+    const tbody = document.querySelector("#detalleTable tbody");
+    tbody.innerHTML = filas.map((rec) => {
+      const estado = rec.tipoPago || rec.estado || "—";
+      const telefono = rec["Telefono completo"] || rec["Telefono"] || "—";
+      return `<tr>
+        <td>${rec.numero}</td>
+        <td>${rec.nombre || "Sin nombre"}</td>
+        <td>${telefono}</td>
+        <td>${rec.vendedorNombre || "Sin asignar"}</td>
+        <td><span class="estado-pill ${claseEstado(estado)}">${estado}</span></td>
+      </tr>`;
+    }).join("");
+
+    $("detalleEmpty").style.display = filas.length === 0 ? "block" : "none";
+  }
+
+  $("filtroEstado").addEventListener("change", renderDetalle);
 
   /* =========================================
      CONFIGURACIÓN
