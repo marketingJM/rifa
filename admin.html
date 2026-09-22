@@ -106,6 +106,10 @@
         <div><label for="cfgInicio">Número inicial</label><input type="number" id="cfgInicio" placeholder="0"></div>
         <div><label for="cfgFin">Número final</label><input type="number" id="cfgFin" placeholder="99"></div>
       </div>
+      <label style="display:flex;align-items:center;gap:8px;margin-top:16px;">
+        <input type="checkbox" id="cfgTelefonoObligatorio" style="width:18px;height:18px;">
+        <span style="color:#ddd;font-size:14px;">Exigir número de WhatsApp del cliente</span>
+      </label>
       <button class="btn btn-gold" id="saveConfigBtn">Guardar configuración</button>
       <div class="msg" id="configMsg"></div>
     </div>
@@ -116,6 +120,8 @@
       <div id="sellerList"><div class="empty">Aún no hay vendedores.</div></div>
       <label for="newSellerName">Nombre del vendedor</label>
       <input type="text" id="newSellerName" placeholder="Nombre">
+      <label for="newSellerPhone">WhatsApp del vendedor (con indicativo, ej: 573001112233)</label>
+      <input type="text" id="newSellerPhone" placeholder="573001112233" inputmode="numeric">
       <button class="btn btn-ghost" id="addSellerBtn">Agregar vendedor</button>
     </div>
 
@@ -199,7 +205,7 @@
 
   let vendedores = {};   // id -> nombre
   let numerosData = {};  // numero -> datos
-  let rifaConfig = { rangoInicio: 0, rangoFin: 99, premio: "", fecha: "", precio: "" };
+  let rifaConfig = { rangoInicio: 0, rangoFin: 99, premio: "", fecha: "", precio: "", telefonoObligatorio: true };
   let unsubscribers = [];
 
   /* =========================================
@@ -262,7 +268,8 @@
           fecha: d.fecha || "",
           precio: d.precio || "",
           rangoInicio: (typeof d.rangoInicio === "number") ? d.rangoInicio : 0,
-          rangoFin: (typeof d.rangoFin === "number") ? d.rangoFin : 99
+          rangoFin: (typeof d.rangoFin === "number") ? d.rangoFin : 99,
+          telefonoObligatorio: (typeof d.telefonoObligatorio === "boolean") ? d.telefonoObligatorio : true
         };
       }
       $("cfgPremio").value = rifaConfig.premio;
@@ -270,14 +277,19 @@
       $("cfgPrecio").value = rifaConfig.precio;
       $("cfgInicio").value = rifaConfig.rangoInicio;
       $("cfgFin").value = rifaConfig.rangoFin;
+      $("cfgTelefonoObligatorio").checked = rifaConfig.telefonoObligatorio;
     }));
 
     const refVendedores = collection(db, "usuarios");
     unsubscribers.push(onSnapshot(refVendedores, (snap) => {
       vendedores = {};
-      snap.forEach((d) => { vendedores[d.id] = d.data().nombre || "(sin nombre)"; });
+      snap.forEach((d) => {
+        const datos = d.data();
+        vendedores[d.id] = { nombre: datos.nombre || "(sin nombre)", telefono: datos.telefono || "" };
+      });
       renderVendedores();
       renderStats();
+      renderDetalle();
     }));
 
     const refNumeros = collection(db, "numeros");
@@ -338,6 +350,7 @@
     const precio = $("cfgPrecio").value.trim();
     const inicio = parseInt($("cfgInicio").value, 10);
     const fin = parseInt($("cfgFin").value, 10);
+    const telefonoObligatorio = $("cfgTelefonoObligatorio").checked;
     const msg = $("configMsg");
     msg.classList.remove("error");
 
@@ -349,7 +362,7 @@
 
     try {
       await setDoc(doc(db, "config", "rifa"), {
-        premio, fecha, precio, rangoInicio: inicio, rangoFin: fin
+        premio, fecha, precio, rangoInicio: inicio, rangoFin: fin, telefonoObligatorio
       }, { merge: true });
       msg.textContent = "Configuración guardada.";
     } catch (error) {
@@ -370,9 +383,20 @@
       list.innerHTML = '<div class="empty">Aún no hay vendedores.</div>';
       return;
     }
-    list.innerHTML = ids.map((id) =>
-      `<div class="item"><span>${vendedores[id]}</span><button class="del" data-del="${id}">🗑️</button></div>`
-    ).join("");
+    list.innerHTML = ids.map((id) => {
+      const v = vendedores[id];
+      const obligatorio = v.telefonoObligatorio !== false; // por defecto true
+      return `<div class="item" style="flex-direction:column;align-items:stretch;gap:6px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <span>${v.nombre}${v.telefono ? " · " + v.telefono : ""}</span>
+          <button class="del" data-del="${id}">🗑️</button>
+        </div>
+        <label style="display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:#bbb;">
+          <input type="checkbox" data-tel-oblig="${id}" ${obligatorio ? "checked" : ""} style="width:16px;height:16px;">
+          Exigir WhatsApp del cliente cuando venda este vendedor
+        </label>
+      </div>`;
+    }).join("");
   }
 
   $("sellerList").addEventListener("click", async (e) => {
@@ -388,12 +412,26 @@
     }
   });
 
+  $("sellerList").addEventListener("change", async (e) => {
+    const id = e.target.dataset.telOblig;
+    if (!id) return;
+    try {
+      await setDoc(doc(db, "usuarios", id), { telefonoObligatorio: e.target.checked }, { merge: true });
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo actualizar. Revisa las reglas de Firestore.");
+      e.target.checked = !e.target.checked;
+    }
+  });
+
   $("addSellerBtn").addEventListener("click", async () => {
     const name = $("newSellerName").value.trim();
+    const telefono = $("newSellerPhone").value.trim();
     if (!name) return;
     try {
-      await addDoc(collection(db, "usuarios"), { nombre: name });
+      await addDoc(collection(db, "usuarios"), { nombre: name, telefono: telefono, telefonoObligatorio: true });
       $("newSellerName").value = "";
+      $("newSellerPhone").value = "";
     } catch (error) {
       console.error(error);
       alert("No se pudo agregar. Revisa las reglas de Firestore.");
@@ -407,7 +445,7 @@
   function renderStats() {
     const stats = {};
     Object.keys(vendedores).forEach((id) => {
-      stats[id] = { nombre: vendedores[id], total: 0, pago: 0, abono: 0, separo: 0 };
+      stats[id] = { nombre: vendedores[id].nombre, total: 0, pago: 0, abono: 0, separo: 0 };
     });
 
     Object.values(numerosData).forEach((rec) => {
