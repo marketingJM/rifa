@@ -6,6 +6,8 @@
 
   <title>Rifa Cadena de Oro 18K</title>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
   <style>
     * {
       box-sizing: border-box;
@@ -287,6 +289,33 @@
       min-height: 25px;
     }
 
+    .btn-compartir {
+      display: none;
+      width: 100%;
+      height: 58px;
+      border: none;
+      border-radius: 14px;
+      background: #d8af32;
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: .2s;
+    }
+
+    .btn-compartir:hover {
+      background: #e7c34b;
+    }
+
+    .mensaje-compartir {
+      text-align: center;
+      color: #999;
+      font-size: 13px;
+      margin-top: 10px;
+      min-height: 16px;
+    }
+
     @media (max-width: 600px) {
 
       .container {
@@ -396,11 +425,16 @@
 
     <div id="numeros" class="numeros"></div>
 
+    <button type="button" id="shareIndexBtn" class="btn-compartir">Compartir números disponibles</button>
+    <div class="mensaje-compartir" id="shareIndexMsg"></div>
+
     <div style="text-align:center;margin-top:26px;">
       <a href="admin.html" style="color:#555;font-size:12px;text-decoration:none;">Acceso administrador</a>
     </div>
 
   </div>
+
+  <div id="exportTarget" style="position:fixed; left:-9999px; top:0; width:480px;"></div>
 
   <div id="overlay" class="overlay">
     <div class="modal">
@@ -796,6 +830,71 @@
     /* =========================================
        INICIAR PÁGINA
     ========================================== */
+
+    /* =========================================
+       COMPARTIR IMAGEN DE DISPONIBLES (igual que en admin.html)
+       Abre el menú nativo del celular (WhatsApp, Estado, etc.)
+       Solo se muestra si el navegador lo soporta.
+    ========================================== */
+
+    const shareIndexBtn = document.getElementById("shareIndexBtn");
+    const shareIndexMsg = document.getElementById("shareIndexMsg");
+
+    if (navigator.canShare) {
+      shareIndexBtn.style.display = "block";
+    }
+
+    function construirExportHtml() {
+      const cifras = digitos();
+      let celdas = "";
+      for (let i = rifaConfig.rangoInicio; i <= rifaConfig.rangoFin; i++) {
+        const num = String(i).padStart(cifras, "0");
+        const ocupado = !!numerosData[num];
+        celdas += `<div style="aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+          border-radius:6px;font-weight:700;font-size:14px;font-family:Arial,sans-serif;
+          ${ocupado ? "background:#333;color:#777;text-decoration:line-through;" : "background:#050505;color:#d8af32;border:1px solid #c9a52e;"}">${num}</div>`;
+      }
+      const total = rifaConfig.rangoFin - rifaConfig.rangoInicio + 1;
+      const disponibles = total - Object.keys(numerosData).length;
+      const premioTexto = rifaConfig.premio.replace(/<br\s*\/?>/gi, " ");
+      return `<div style="width:480px;padding:22px;background:#000;font-family:Arial,sans-serif;color:#fff;">
+        <div style="color:#d8af32;font-weight:800;font-size:22px;margin-bottom:2px;">${premioTexto || "RIFA"}</div>
+        <div style="font-size:13px;color:#aaa;margin-bottom:14px;">
+          Sorteo: ${rifaConfig.fecha || "por definir"} · Valor: ${rifaConfig.precio || ""} · Disponibles: ${disponibles} de ${total}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;">${celdas}</div>
+      </div>`;
+    }
+
+    shareIndexBtn.addEventListener("click", async () => {
+      shareIndexMsg.textContent = "Generando imagen...";
+      const target = document.getElementById("exportTarget");
+      target.innerHTML = construirExportHtml();
+      try {
+        const canvas = await html2canvas(target.firstChild, { backgroundColor: null, scale: 2 });
+        canvas.toBlob(async (blob) => {
+          const file = new File([blob], "rifa-disponibles.png", { type: "image/png" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: "Números disponibles",
+                text: "ESCOGE AQUÍ TU NÚMERO\nhttps://marketingjm.github.io/rifa/"
+              });
+              shareIndexMsg.textContent = "";
+            } catch (err) {
+              // El usuario cerró el menú de compartir, no es un error.
+              shareIndexMsg.textContent = "";
+            }
+          } else {
+            shareIndexMsg.textContent = "Tu navegador no admite compartir imágenes directamente.";
+          }
+        }, "image/png");
+      } catch (error) {
+        console.error(error);
+        shareIndexMsg.textContent = "No se pudo generar la imagen.";
+      }
+    });
 
     escucharConfig();
     escucharReservas();
