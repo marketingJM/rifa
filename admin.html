@@ -138,6 +138,8 @@
         <button class="btn btn-ghost" id="exportImgBtn">Imagen PNG</button>
         <button class="btn btn-ghost" id="exportPdfBtn">PDF</button>
       </div>
+      <button class="btn btn-gold" id="shareImgBtn" style="display:none">Compartir imagen (WhatsApp, Estado, etc.)</button>
+      <div class="msg" id="shareMsg"></div>
     </div>
   </div>
 
@@ -454,7 +456,51 @@
   $("exportImgBtn").addEventListener("click", () => exportarDisponibles("image"));
   $("exportPdfBtn").addEventListener("click", () => exportarDisponibles("pdf"));
 
+  /* =========================================
+     COMPARTIR DIRECTO (abre el menú nativo del
+     celular: WhatsApp, Estado, etc.) Solo aparece
+     si el navegador lo soporta (Chrome/Android sí,
+     algunos otros no).
+  ========================================== */
+
+  if (navigator.canShare) {
+    $("shareImgBtn").style.display = "block";
+  }
+
+  $("shareImgBtn").addEventListener("click", async () => {
+    const msg = $("shareMsg");
+    msg.classList.remove("error");
+    msg.textContent = "Generando imagen...";
+    const target = $("exportTarget");
+    target.innerHTML = construirExportHtml();
+    try {
+      const canvas = await html2canvas(target.firstChild, { backgroundColor: null, scale: 2 });
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], "rifa-disponibles.png", { type: "image/png" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: "Números disponibles",
+              text: "Números disponibles para la rifa"
+            });
+            msg.textContent = "";
+          } catch (err) {
+            // El usuario canceló el menú de compartir, no es un error real.
+            msg.textContent = "";
+          }
+        } else {
+          msg.textContent = "Tu navegador no admite compartir imágenes directamente. Usa el botón 'Imagen PNG' y compártela manualmente.";
+          msg.classList.add("error");
+        }
+      }, "image/png");
+    } catch (error) {
+      console.error(error);
+      msg.textContent = "No se pudo generar la imagen.";
+      msg.classList.add("error");
+    }
+  });
+
 </script>
 </body>
 </html>
-
