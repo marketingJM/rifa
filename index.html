@@ -448,7 +448,7 @@
       </div>
 
       <div class="campo">
-        <label for="telefono">Número de WhatsApp</label>
+        <label for="telefono" id="labelTelefono">Número de WhatsApp</label>
         <div class="telefono-container">
           <select id="codigoPais" class="codigo-pais">
             <option value="+57">🇨🇴 +57</option>
@@ -543,7 +543,7 @@
     let procesando = false;
     let vendedores = {}; // id -> nombre
     let numerosData = {}; // numero -> datos de la reserva
-    let rifaConfig = { premio: "CADENA DE<br>ORO 18K", fecha: "19 DE JUNIO", precio: "$70.000", rangoInicio: 0, rangoFin: 99 };
+    let rifaConfig = { premio: "CADENA DE<br>ORO 18K", fecha: "19 DE JUNIO", precio: "$70.000", rangoInicio: 0, rangoFin: 99, telefonoObligatorio: true };
 
     function digitos() {
       return Math.max(String(rifaConfig.rangoInicio).length, String(rifaConfig.rangoFin).length, 2);
@@ -590,13 +590,16 @@
             fecha: datos.fecha || rifaConfig.fecha,
             precio: datos.precio || rifaConfig.precio,
             rangoInicio: (typeof datos.rangoInicio === "number") ? datos.rangoInicio : rifaConfig.rangoInicio,
-            rangoFin: (typeof datos.rangoFin === "number") ? datos.rangoFin : rifaConfig.rangoFin
+            rangoFin: (typeof datos.rangoFin === "number") ? datos.rangoFin : rifaConfig.rangoFin,
+            telefonoObligatorio: (typeof datos.telefonoObligatorio === "boolean") ? datos.telefonoObligatorio : rifaConfig.telefonoObligatorio
           };
         }
         document.getElementById("tituloRifa").innerHTML = rifaConfig.premio;
         document.getElementById("fechaSorteo").textContent = rifaConfig.fecha;
         document.getElementById("valorNumero").textContent = rifaConfig.precio;
         document.title = "Rifa - " + rifaConfig.fecha;
+        actualizarLabelTelefono();
+        validarFormulario();
         renderGrid();
       }, (error) => {
         console.error("Error escuchando configuración:", error);
@@ -642,7 +645,13 @@
         snapshot.forEach((documento) => {
           const datos = documento.data();
           if (datos && datos.nombre) {
-            vendedores[documento.id] = datos.nombre;
+            vendedores[documento.id] = {
+              nombre: datos.nombre,
+              telefono: datos.telefono || "",
+              // Si el vendedor no tiene el campo definido, se usa el valor
+              // general de la rifa (rifaConfig.telefonoObligatorio).
+              telefonoObligatorio: (typeof datos.telefonoObligatorio === "boolean") ? datos.telefonoObligatorio : null
+            };
           }
         });
 
@@ -653,16 +662,42 @@
           vendedorSelect.innerHTML = '<option value="">No hay vendedores registrados</option>';
         } else {
           vendedorSelect.innerHTML = '<option value="">Selecciona un vendedor</option>' +
-            ids.map((id) => `<option value="${id}">${vendedores[id]}</option>`).join("");
+            ids.map((id) => `<option value="${id}">${vendedores[id].nombre}</option>`).join("");
           if (vendedores[seleccionActual]) {
             vendedorSelect.value = seleccionActual;
           }
         }
+        actualizarLabelTelefono();
         validarFormulario();
       }, (error) => {
         console.error("Error escuchando vendedores:", error);
       });
     }
+
+    /* =========================================
+       ¿ES OBLIGATORIO EL WHATSAPP AHORA MISMO?
+       Depende del vendedor seleccionado; si ese
+       vendedor no tiene el dato definido, se usa
+       la configuración general de la rifa.
+    ========================================== */
+
+    function telefonoEsObligatorio() {
+      const v = vendedores[vendedorSelect.value];
+      if (v && typeof v.telefonoObligatorio === "boolean") {
+        return v.telefonoObligatorio;
+      }
+      return rifaConfig.telefonoObligatorio;
+    }
+
+    function actualizarLabelTelefono() {
+      const obligatorio = telefonoEsObligatorio();
+      document.getElementById("labelTelefono").textContent = "Número de WhatsApp" + (obligatorio ? "" : " (opcional)");
+    }
+
+    vendedorSelect.addEventListener("change", () => {
+      actualizarLabelTelefono();
+      validarFormulario();
+    });
 
     function marcarOcupado(numero) {
       const boton = document.querySelector(`.numero[data-numero="${numero}"]`);
@@ -722,7 +757,7 @@
 
     function validarFormulario() {
       const nombreValido = nombre.value.trim().length >= 2;
-      const telefonoValido = telefono.value.trim().length >= 7;
+      const telefonoValido = telefonoEsObligatorio() ? (telefono.value.trim().length >= 7) : true;
       const pagoValido = tipoPago.value !== "";
       const vendedorValido = vendedorSelect.value !== "";
       const valido = nombreValido && telefonoValido && pagoValido && vendedorValido && numeroActual !== null;
