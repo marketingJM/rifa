@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin - Rifa</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; }
+  body {
+    background:#000; color:#fff; font-family:Arial, Helvetica, sans-serif; min-height:100vh;
+  }
+  .container { width:100%; max-width:640px; margin:auto; padding:30px 18px 60px; }
+
+  h1 { color:#d8af32; font-size:28px; text-align:center; margin-bottom:6px; letter-spacing:2px; }
+  .sub { text-align:center; color:#999; font-size:13px; margin-bottom:30px; }
+
+  .card {
+    background:#0b0b0b; border:2px solid #c9a52e; border-radius:18px;
+    padding:20px 18px; margin-bottom:20px;
+  }
+  .card h2 { color:#d8af32; font-size:19px; margin-bottom:14px; font-weight:700; }
+  .card p.hint { color:#999; font-size:13px; margin:-8px 0 14px; }
+
+  label { display:block; color:#ccc; font-size:14px; margin:10px 0 5px; }
+  input[type=text], input[type=number], input[type=email], input[type=password], select {
+    width:100%; height:48px; background:#050505; border:2px solid #444; border-radius:10px;
+    color:#fff; font-size:15px; padding:0 14px; outline:none;
+  }
+  input:focus, select:focus { border-color:#d8af32; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+  button.btn {
+    width:100%; height:50px; border:none; border-radius:10px; font-size:15px; font-weight:700;
+    cursor:pointer; margin-top:14px; transition:.2s;
+  }
+  .btn-gold { background:#d8af32; color:#000; }
+  .btn-gold:hover { background:#e7c34b; }
+  .btn-ghost { background:#1a1a1a; color:#fff; border:1px solid #444; }
+  .btn-danger { background:#8a2f22; color:#fff; }
+  .btn-row { display:flex; gap:8px; }
+  .btn-row .btn { margin-top:0; }
+
+  .item {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:9px 0; border-bottom:1px solid #222; font-size:14px;
+  }
+  .item:last-child { border-bottom:0; }
+  .item .del { background:none; border:0; color:#c0392b; font-size:18px; cursor:pointer; }
+  .empty { text-align:center; color:#666; font-size:13px; padding:14px 0; }
+
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid #222; }
+  th { color:#999; font-weight:600; font-size:11px; }
+
+  .msg { text-align:center; font-size:13px; margin-top:12px; min-height:18px; color:#d8af32; }
+  .msg.error { color:#e05a4a; }
+
+  #loginBox { max-width:380px; margin:80px auto 0; }
+  #adminBox { display:none; }
+
+  .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+  .topbar button { width:auto; padding:0 16px; height:38px; font-size:13px; margin:0; }
+
+  @media (max-width:420px){
+    .row2 { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div id="loginBox" class="card">
+    <h1>ADMIN</h1>
+    <div class="sub">Rifa Cadena de Oro 18K</div>
+    <label for="loginEmail">Correo</label>
+    <input type="email" id="loginEmail" placeholder="tu@correo.com">
+    <label for="loginPass">Contraseña</label>
+    <input type="password" id="loginPass" placeholder="••••••••">
+    <button class="btn btn-gold" id="loginBtn">Ingresar</button>
+    <div class="msg" id="loginMsg"></div>
+  </div>
+
+  <div id="adminBox">
+    <div class="topbar">
+      <h1 style="text-align:left;margin:0;">ADMIN</h1>
+      <button class="btn btn-ghost" id="logoutBtn">Cerrar sesión</button>
+    </div>
+
+    <div class="card">
+      <h2>Configuración de la rifa</h2>
+      <label for="cfgPremio">¿Qué se rifa? (puedes usar &lt;br&gt; para salto de línea)</label>
+      <input type="text" id="cfgPremio" placeholder="CADENA DE<br>ORO 18K">
+      <div class="row2">
+        <div><label for="cfgFecha">Fecha del sorteo</label><input type="text" id="cfgFecha" placeholder="19 DE JUNIO"></div>
+        <div><label for="cfgPrecio">Valor por número</label><input type="text" id="cfgPrecio" placeholder="$70.000"></div>
+      </div>
+      <div class="row2">
+        <div><label for="cfgInicio">Número inicial</label><input type="number" id="cfgInicio" placeholder="0"></div>
+        <div><label for="cfgFin">Número final</label><input type="number" id="cfgFin" placeholder="99"></div>
+      </div>
+      <button class="btn btn-gold" id="saveConfigBtn">Guardar configuración</button>
+      <div class="msg" id="configMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>Vendedores</h2>
+      <p class="hint">Aparecen en la lista al reservar un número.</p>
+      <div id="sellerList"><div class="empty">Aún no hay vendedores.</div></div>
+      <label for="newSellerName">Nombre del vendedor</label>
+      <input type="text" id="newSellerName" placeholder="Nombre">
+      <button class="btn btn-ghost" id="addSellerBtn">Agregar vendedor</button>
+    </div>
+
+    <div class="card">
+      <h2>Estadísticas por vendedor</h2>
+      <table id="statsTable">
+        <thead><tr><th>Vendedor</th><th>Total</th><th>Pagó</th><th>Abono</th><th>Separó</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <div id="statsEmpty" class="empty" style="display:none">Sin reservas todavía.</div>
+    </div>
+
+    <div class="card">
+      <h2>Cancelar un número reservado</h2>
+      <p class="hint">Libera el número y borra su registro.</p>
+      <select id="cancelSelect"><option value="">Seleccionar número…</option></select>
+      <button class="btn btn-danger" id="cancelBtn">Cancelar número seleccionado</button>
+      <div class="msg" id="cancelMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>Exportar disponibles</h2>
+      <p class="hint">Genera una imagen o PDF para compartir por WhatsApp.</p>
+      <div class="btn-row">
+        <button class="btn btn-ghost" id="exportImgBtn">Imagen PNG</button>
+        <button class="btn btn-ghost" id="exportPdfBtn">PDF</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="exportTarget" style="position:fixed; left:-9999px; top:0; width:480px;"></div>
+
+<script type="module">
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getFirestore, collection, doc, onSnapshot, setDoc, addDoc, deleteDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBIq6Q9eJoJDaksUbgOODAMWXcHIYVJYSc",
+    authDomain: "yo-rifo-e6643.firebaseapp.com",
+    projectId: "yo-rifo-e6643",
+    storageBucket: "yo-rifo-e6643.firebasestorage.app",
+    messagingSenderId: "1069586862416",
+    appId: "1:1069586862416:web:99ea2d0a194f55d3bf1c55",
+    measurementId: "G-91M04K32V4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  const $ = (id) => document.getElementById(id);
+
+  let vendedores = {};   // id -> nombre
+  let numerosData = {};  // numero -> datos
+  let rifaConfig = { rangoInicio: 0, rangoFin: 99, premio: "", fecha: "", precio: "" };
+  let unsubscribers = [];
+
+  /* =========================================
+     LOGIN
+  ========================================== */
+
+  $("loginBtn").addEventListener("click", async () => {
+    const email = $("loginEmail").value.trim();
+    const pass = $("loginPass").value;
+    $("loginMsg").textContent = "";
+    $("loginMsg").classList.remove("error");
+    if (!email || !pass) {
+      $("loginMsg").textContent = "Escribe tu correo y contraseña.";
+      $("loginMsg").classList.add("error");
+      return;
+    }
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+    } catch (error) {
+      console.error(error);
+      $("loginMsg").textContent = "Correo o contraseña incorrectos.";
+      $("loginMsg").classList.add("error");
+    }
+  });
+
+  $("logoutBtn").addEventListener("click", async () => {
+    await signOut(auth);
+  });
+
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      $("loginBox").style.display = "none";
+      $("adminBox").style.display = "block";
+      iniciarEscuchas();
+    } else {
+      $("loginBox").style.display = "block";
+      $("adminBox").style.display = "none";
+      detenerEscuchas();
+    }
+  });
+
+  function detenerEscuchas() {
+    unsubscribers.forEach((fn) => fn());
+    unsubscribers = [];
+  }
+
+  /* =========================================
+     ESCUCHAS (config, vendedores, números)
+  ========================================== */
+
+  function iniciarEscuchas() {
+    detenerEscuchas();
+
+    const refConfig = doc(db, "config", "rifa");
+    unsubscribers.push(onSnapshot(refConfig, (snap) => {
+      if (snap.exists()) {
+        const d = snap.data();
+        rifaConfig = {
+          premio: d.premio || "",
+          fecha: d.fecha || "",
+          precio: d.precio || "",
+          rangoInicio: (typeof d.rangoInicio === "number") ? d.rangoInicio : 0,
+          rangoFin: (typeof d.rangoFin === "number") ? d.rangoFin : 99
+        };
+      }
+      $("cfgPremio").value = rifaConfig.premio;
+      $("cfgFecha").value = rifaConfig.fecha;
+      $("cfgPrecio").value = rifaConfig.precio;
+      $("cfgInicio").value = rifaConfig.rangoInicio;
+      $("cfgFin").value = rifaConfig.rangoFin;
+    }));
+
+    const refVendedores = collection(db, "usuarios");
+    unsubscribers.push(onSnapshot(refVendedores, (snap) => {
+      vendedores = {};
+      snap.forEach((d) => { vendedores[d.id] = d.data().nombre || "(sin nombre)"; });
+      renderVendedores();
+      renderStats();
+    }));
+
+    const refNumeros = collection(db, "numeros");
+    unsubscribers.push(onSnapshot(refNumeros, (snap) => {
+      numerosData = {};
+      snap.forEach((d) => { numerosData[d.id] = d.data(); });
+      renderStats();
+      renderCancelSelect();
+    }));
+  }
+
+  /* =========================================
+     CONFIGURACIÓN
+  ========================================== */
+
+  $("saveConfigBtn").addEventListener("click", async () => {
+    const premio = $("cfgPremio").value.trim();
+    const fecha = $("cfgFecha").value.trim();
+    const precio = $("cfgPrecio").value.trim();
+    const inicio = parseInt($("cfgInicio").value, 10);
+    const fin = parseInt($("cfgFin").value, 10);
+    const msg = $("configMsg");
+    msg.classList.remove("error");
+
+    if (!premio || !fecha || !precio || isNaN(inicio) || isNaN(fin) || fin < inicio) {
+      msg.textContent = "Revisa los datos, algo falta o el rango no es válido.";
+      msg.classList.add("error");
+      return;
+    }
+
+    try {
+      await setDoc(doc(db, "config", "rifa"), {
+        premio, fecha, precio, rangoInicio: inicio, rangoFin: fin
+      }, { merge: true });
+      msg.textContent = "Configuración guardada.";
+    } catch (error) {
+      console.error(error);
+      msg.textContent = "No se pudo guardar. Revisa tu conexión o las reglas de Firestore.";
+      msg.classList.add("error");
+    }
+  });
+
+  /* =========================================
+     VENDEDORES
+  ========================================== */
+
+  function renderVendedores() {
+    const ids = Object.keys(vendedores);
+    const list = $("sellerList");
+    if (ids.length === 0) {
+      list.innerHTML = '<div class="empty">Aún no hay vendedores.</div>';
+      return;
+    }
+    list.innerHTML = ids.map((id) =>
+      `<div class="item"><span>${vendedores[id]}</span><button class="del" data-del="${id}">🗑️</button></div>`
+    ).join("");
+  }
+
+  $("sellerList").addEventListener("click", async (e) => {
+    const id = e.target.dataset.del;
+    if (!id) return;
+    if (confirm("¿Eliminar este vendedor?")) {
+      try {
+        await deleteDoc(doc(db, "usuarios", id));
+      } catch (error) {
+        console.error(error);
+        alert("No se pudo eliminar. Revisa las reglas de Firestore.");
+      }
+    }
+  });
+
+  $("addSellerBtn").addEventListener("click", async () => {
+    const name = $("newSellerName").value.trim();
+    if (!name) return;
+    try {
+      await addDoc(collection(db, "usuarios"), { nombre: name });
+      $("newSellerName").value = "";
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo agregar. Revisa las reglas de Firestore.");
+    }
+  });
+
+  /* =========================================
+     ESTADÍSTICAS
+  ========================================== */
+
+  function renderStats() {
+    const stats = {};
+    Object.keys(vendedores).forEach((id) => {
+      stats[id] = { nombre: vendedores[id], total: 0, pago: 0, abono: 0, separo: 0 };
+    });
+
+    Object.values(numerosData).forEach((rec) => {
+      const id = rec.vendedorId || "__sin__";
+      if (!stats[id]) stats[id] = { nombre: rec.vendedorNombre || "Sin vendedor", total: 0, pago: 0, abono: 0, separo: 0 };
+      stats[id].total++;
+      const estado = rec.tipoPago || rec.estado || "";
+      if (estado === "Pagó") stats[id].pago++;
+      else if (estado === "Abono") stats[id].abono++;
+      else if (estado === "Solo separo") stats[id].separo++;
+    });
+
+    const rows = Object.values(stats);
+    const tbody = document.querySelector("#statsTable tbody");
+    tbody.innerHTML = rows.map((s) =>
+      `<tr><td>${s.nombre}</td><td>${s.total}</td><td>${s.pago}</td><td>${s.abono}</td><td>${s.separo}</td></tr>`
+    ).join("");
+    $("statsEmpty").style.display = rows.length === 0 ? "block" : "none";
+  }
+
+  /* =========================================
+     CANCELAR NÚMERO
+  ========================================== */
+
+  function renderCancelSelect() {
+    const sel = $("cancelSelect");
+    const nums = Object.keys(numerosData).sort();
+    sel.innerHTML = '<option value="">Seleccionar número…</option>' + nums.map((n) =>
+      `<option value="${n}">${n} — ${numerosData[n].nombre || "Sin nombre"}</option>`
+    ).join("");
+  }
+
+  $("cancelBtn").addEventListener("click", async () => {
+    const numero = $("cancelSelect").value;
+    const msg = $("cancelMsg");
+    msg.classList.remove("error");
+    if (!numero) return;
+    if (!confirm("¿Cancelar la reserva del número " + numero + "? Quedará disponible de nuevo.")) return;
+    try {
+      await deleteDoc(doc(db, "numeros", numero));
+      msg.textContent = "Número " + numero + " liberado.";
+    } catch (error) {
+      console.error(error);
+      msg.textContent = "No se pudo cancelar. Revisa las reglas de Firestore.";
+      msg.classList.add("error");
+    }
+  });
+
+  /* =========================================
+     EXPORTAR DISPONIBLES
+  ========================================== */
+
+  function digitos() {
+    return Math.max(String(rifaConfig.rangoInicio).length, String(rifaConfig.rangoFin).length, 2);
+  }
+
+  function construirExportHtml() {
+    const cifras = digitos();
+    let celdas = "";
+    for (let i = rifaConfig.rangoInicio; i <= rifaConfig.rangoFin; i++) {
+      const numero = String(i).padStart(cifras, "0");
+      const ocupado = !!numerosData[numero];
+      celdas += `<div style="aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+        border-radius:6px;font-weight:700;font-size:14px;font-family:Arial,sans-serif;
+        ${ocupado ? "background:#333;color:#777;text-decoration:line-through;" : "background:#050505;color:#d8af32;border:1px solid #c9a52e;"}">${numero}</div>`;
+    }
+    const total = rifaConfig.rangoFin - rifaConfig.rangoInicio + 1;
+    const disponibles = total - Object.keys(numerosData).length;
+    return `<div style="width:480px;padding:22px;background:#000;font-family:Arial,sans-serif;color:#fff;">
+      <div style="color:#d8af32;font-weight:800;font-size:22px;margin-bottom:2px;">${rifaConfig.premio.replace(/<br\s*\/?>/gi, " ") || "RIFA"}</div>
+      <div style="font-size:13px;color:#aaa;margin-bottom:14px;">
+        Sorteo: ${rifaConfig.fecha || "por definir"} · Valor: ${rifaConfig.precio || ""} · Disponibles: ${disponibles} de ${total}
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;">${celdas}</div>
+    </div>`;
+  }
+
+  function descargarBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
+  async function exportarDisponibles(tipo) {
+    const target = $("exportTarget");
+    target.innerHTML = construirExportHtml();
+    try {
+      const canvas = await html2canvas(target.firstChild, { backgroundColor: null, scale: 2 });
+      if (tipo === "image") {
+        canvas.toBlob((blob) => descargarBlob(blob, "rifa-disponibles.png"), "image/png");
+      } else {
+        const imgData = canvas.toDataURL("image/png");
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({ unit: "pt", format: [canvas.width / 2 + 40, canvas.height / 2 + 40] });
+        pdf.addImage(imgData, "PNG", 20, 20, canvas.width / 2, canvas.height / 2);
+        pdf.save("rifa-disponibles.pdf");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo generar el archivo.");
+    }
+  }
+
+  $("exportImgBtn").addEventListener("click", () => exportarDisponibles("image"));
+  $("exportPdfBtn").addEventListener("click", () => exportarDisponibles("pdf"));
+
+</script>
+</body>
+</html>
+
