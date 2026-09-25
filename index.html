@@ -1,689 +1,988 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin - Rifa</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-  :root {
-    --bg: #fff8e7;
-    --accent: #c9a227;
-    --accent-light: #e8c766;
-    --border: #c9a227;
-    --panel-1: #fff1d0;
-    --panel-2: #ffe9b8;
-    --text: #3b2f16;
-    --text-dim: #8a7550;
-  }
-  * { box-sizing: border-box; margin:0; padding:0; }
-  body {
-    background:var(--bg); color:var(--text); font-family:Arial, Helvetica, sans-serif; min-height:100vh;
-  }
-  .container { width:100%; max-width:640px; margin:auto; padding:30px 18px 60px; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  h1 { color:var(--accent); font-size:28px; text-align:center; margin-bottom:6px; letter-spacing:2px; }
-  .sub { text-align:center; color:var(--text-dim); font-size:13px; margin-bottom:30px; }
+  <title>Rifa Cadena de Oro 18K</title>
 
-  .card {
-    background:var(--panel-1); border:2px solid var(--border); border-radius:18px;
-    padding:20px 18px; margin-bottom:20px;
-  }
-  .card h2 { color:var(--accent); font-size:19px; margin-bottom:14px; font-weight:700; }
-  .card p.hint { color:var(--text-dim); font-size:13px; margin:-8px 0 14px; }
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
-  label { display:block; color:var(--text-dim); font-size:14px; margin:10px 0 5px; }
-  input[type=text], input[type=number], input[type=email], input[type=password], select {
-    width:100%; height:48px; background:var(--panel-2); border:2px solid #444; border-radius:10px;
-    color:var(--text); font-size:15px; padding:0 14px; outline:none;
-  }
-  input:focus, select:focus { border-color:var(--accent); }
-  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  <style>
+    :root {
+      --bg: #fff8e7;
+      --accent: #c9a227;
+      --accent-light: #e8c766;
+      --border: #c9a227;
+      --panel-1: #fff1d0;
+      --panel-2: #ffe9b8;
+      --panel-3: #ffe4a6;
+      --text: #3b2f16;
+      --text-dim: #8a7550;
+    }
 
-  button.btn {
-    width:100%; height:50px; border:none; border-radius:10px; font-size:15px; font-weight:700;
-    cursor:pointer; margin-top:14px; transition:.2s;
-  }
-  .btn-gold { background:var(--accent); color:#000; }
-  .btn-gold:hover { background:var(--accent-light); }
-  .btn-ghost { background:var(--panel-2); color:var(--text); border:1px solid var(--border); }
-  .btn-danger { background:#8a2f22; color:#fff; }
-  .btn-row { display:flex; gap:8px; }
-  .btn-row .btn { margin-top:0; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-  .item {
-    display:flex; align-items:center; justify-content:space-between;
-    padding:9px 0; border-bottom:1px solid #222; font-size:14px;
-  }
-  .item:last-child { border-bottom:0; }
-  .item .del { background:none; border:0; color:#c0392b; font-size:18px; cursor:pointer; }
-  .empty { text-align:center; color:#666; font-size:13px; padding:14px 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+    }
 
-  table { width:100%; border-collapse:collapse; font-size:13px; }
-  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid #222; }
-  th { color:var(--text-dim); font-weight:600; font-size:11px; }
+    .container {
+      width: 100%;
+      max-width: 720px;
+      margin: auto;
+      padding: 35px 20px 60px;
+    }
 
-  .msg { text-align:center; font-size:13px; margin-top:12px; min-height:18px; color:var(--accent); }
-  .msg.error { color:#e05a4a; }
+    .titulo-rifa {
+      text-align: center;
+      margin-bottom: 35px;
+    }
 
-  .estado-pill { display:inline-block; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; }
-  .estado-pago { background: rgba(46,204,113,.18); color:#1a7a4a; }
-  .estado-abono { background: rgba(216,175,50,.2); color:var(--accent); }
-  .estado-separo { background: rgba(0,0,0,.08); color:var(--text-dim); }
+    .rifa {
+      color: var(--accent);
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: 12px;
+      margin-bottom: 5px;
+    }
 
-  .tema-swatch {
-    aspect-ratio: 1/1; border-radius:10px; cursor:pointer; border:2px solid transparent;
-    display:flex; align-items:flex-end; justify-content:center; padding:4px;
-  }
-  .tema-swatch span { font-size:9px; color:#fff; background:rgba(0,0,0,.55); padding:2px 4px; border-radius:4px; text-align:center; line-height:1.1; }
-  .tema-swatch.activo { border-color:#fff; }
+    .titulo {
+      color: var(--text);
+      font-size: 42px;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: 2px;
+    }
 
-  #loginBox { max-width:380px; margin:80px auto 0; }
-  #adminBox { display:none; }
+    .info-boxes {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+      margin-bottom: 45px;
+    }
 
-  .topbar { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
-  .topbar button { width:auto; padding:0 16px; height:38px; font-size:13px; margin:0; }
+    .info-box {
+      width: 330px;
+      max-width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 15px;
+      text-align: center;
+      background: var(--panel-1);
+    }
 
-  @media (max-width:420px){
-    .row2 { grid-template-columns:1fr; }
-  }
-</style>
+    .info-label {
+      color: var(--text-dim);
+      font-size: 19px;
+      letter-spacing: 4px;
+      margin-bottom: 8px;
+    }
+
+    .info-value {
+      color: var(--accent);
+      font-size: 27px;
+      font-weight: bold;
+    }
+
+    .selecciona {
+      text-align: center;
+      font-size: 22px;
+      color: var(--text);
+      margin-bottom: 25px;
+    }
+
+    .leyenda {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+      margin-bottom: 25px;
+      font-size: 18px;
+    }
+
+    .leyenda-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .circulo {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .disponible {
+      background: var(--accent);
+    }
+
+    .ocupado {
+      background: #555;
+    }
+
+    .numeros {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 10px;
+      width: 100%;
+    }
+
+    .numero {
+      height: 52px;
+      border: 2px solid var(--border);
+      border-radius: 11px;
+      background: var(--panel-2);
+      color: var(--accent);
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: .2s;
+    }
+
+    .numero:hover {
+      background: var(--accent);
+      color: #000;
+      transform: scale(1.04);
+    }
+
+    .numero.ocupado {
+      background: #333;
+      border-color: #444;
+      color: var(--text-dim);
+      cursor: not-allowed;
+    }
+
+    .numero.ocupado:hover {
+      transform: none;
+      background: #333;
+      color: var(--text-dim);
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .82);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 9999;
+      overflow-y: auto;
+    }
+
+    .overlay.activo {
+      display: flex;
+    }
+
+    .modal {
+      width: 100%;
+      max-width: 630px;
+      background: var(--panel-3);
+      border: 2px solid #d4ae36;
+      border-radius: 32px;
+      padding: 45px 40px 35px;
+      position: relative;
+      box-shadow: 0 0 30px rgba(216, 175, 50, .12);
+    }
+
+    .cerrar {
+      position: absolute;
+      right: 28px;
+      top: 25px;
+      border: none;
+      background: transparent;
+      color: var(--text-dim);
+      font-size: 40px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-titulo {
+      text-align: center;
+      color: var(--accent);
+      font-size: 42px;
+      font-weight: 400;
+      margin-bottom: 25px;
+    }
+
+    .numero-seleccionado {
+      text-align: center;
+      color: var(--text);
+      font-size: 88px;
+      font-weight: 800;
+      margin-bottom: 35px;
+    }
+
+    .campo {
+      margin-bottom: 22px;
+    }
+
+    .campo label {
+      display: block;
+      color: var(--text-dim);
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    .campo input,
+    .campo select {
+      width: 100%;
+      height: 62px;
+      background: var(--panel-2);
+      border: 2px solid #555;
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 19px;
+      padding: 0 20px;
+      outline: none;
+    }
+
+    .campo input:focus,
+    .campo select:focus {
+      border-color: var(--accent);
+    }
+
+    .telefono-container {
+      display: flex;
+      gap: 8px;
+    }
+
+    .codigo-pais {
+      flex: 0 0 140px;
+      padding: 0 8px !important;
+    }
+
+    .telefono-input {
+      flex: 1;
+    }
+
+    .btn-confirmar {
+      width: 100%;
+      height: 68px;
+      border: none;
+      border-radius: 17px;
+      background: #555;
+      color: #aaa;
+      font-size: 27px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+      transition: .2s;
+    }
+
+    .btn-confirmar.activo {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-confirmar.activo:hover {
+      background: var(--accent-light);
+    }
+
+    .btn-confirmar:disabled {
+      cursor: not-allowed;
+    }
+
+    .mensaje {
+      text-align: center;
+      color: var(--accent);
+      font-size: 18px;
+      margin-top: 20px;
+      min-height: 25px;
+    }
+
+    .btn-compartir {
+      display: none;
+      width: 100%;
+      height: 58px;
+      border: none;
+      border-radius: 14px;
+      background: var(--accent);
+      color: #000;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: .2s;
+    }
+
+    .btn-compartir:hover {
+      background: var(--accent-light);
+    }
+
+    .mensaje-compartir {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 13px;
+      margin-top: 10px;
+      min-height: 16px;
+    }
+
+    @media (max-width: 600px) {
+
+      .container {
+        padding: 25px 20px 45px;
+      }
+
+      .rifa {
+        font-size: 38px;
+        letter-spacing: 8px;
+      }
+
+      .titulo {
+        font-size: 32px;
+      }
+
+      .selecciona {
+        font-size: 19px;
+      }
+
+      .numeros {
+        gap: 8px;
+      }
+
+      .numero {
+        height: 48px;
+        font-size: 17px;
+      }
+
+      .modal {
+        padding: 40px 24px 28px;
+        border-radius: 28px;
+      }
+
+      .modal-titulo {
+        font-size: 32px;
+      }
+
+      .numero-seleccionado {
+        font-size: 72px;
+      }
+
+      .campo label {
+        font-size: 18px;
+      }
+
+      .campo input,
+      .campo select {
+        height: 58px;
+        font-size: 17px;
+      }
+
+      .codigo-pais {
+        flex-basis: 120px;
+      }
+
+      .btn-confirmar {
+        height: 62px;
+        font-size: 23px;
+      }
+    }
+
+    @media (max-width: 380px) {
+
+      .numeros {
+        gap: 6px;
+      }
+
+      .numero {
+        height: 43px;
+        font-size: 15px;
+      }
+
+      .codigo-pais {
+        flex-basis: 105px;
+        font-size: 14px !important;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <div id="loginBox" class="card">
-    <h1>ADMIN</h1>
-    <div class="sub">Rifa Cadena de Oro 18K</div>
-    <label for="loginEmail">Correo</label>
-    <input type="email" id="loginEmail" placeholder="tu@correo.com">
-    <label for="loginPass">Contraseña</label>
-    <input type="password" id="loginPass" placeholder="••••••••">
-    <button class="btn btn-gold" id="loginBtn">Ingresar</button>
-    <div class="msg" id="loginMsg"></div>
+    <div class="titulo-rifa">
+      <div class="rifa">RIFA</div>
+      <div class="titulo" id="tituloRifa">CADENA DE<br>ORO 18K</div>
+    </div>
+
+    <div class="info-boxes">
+      <div class="info-box">
+        <div class="info-label">FECHA DEL SORTEO</div>
+        <div class="info-value" id="fechaSorteo">19 DE JUNIO</div>
+      </div>
+      <div class="info-box">
+        <div class="info-label">VALOR POR NÚMERO</div>
+        <div class="info-value" id="valorNumero">$70.000</div>
+      </div>
+    </div>
+
+    <div class="selecciona">Selecciona el número que deseas reservar</div>
+
+    <div class="leyenda">
+      <div class="leyenda-item"><span class="circulo disponible"></span>Disponible</div>
+      <div class="leyenda-item"><span class="circulo ocupado"></span>Ocupado</div>
+    </div>
+
+    <div id="numeros" class="numeros"></div>
+
+    <button type="button" id="shareIndexBtn" class="btn-compartir">Compartir números disponibles</button>
+    <div class="mensaje-compartir" id="shareIndexMsg"></div>
+
+    <div style="text-align:center;margin-top:26px;">
+      <a href="admin.html" style="color:#555;font-size:12px;text-decoration:none;">Acceso administrador</a>
+    </div>
+
   </div>
 
-  <div id="adminBox">
-    <div class="topbar">
-      <h1 style="text-align:left;margin:0;">ADMIN</h1>
-      <button class="btn btn-ghost" id="logoutBtn">Cerrar sesión</button>
-    </div>
+  <div id="exportTarget" style="position:fixed; left:-9999px; top:0; width:480px;"></div>
 
-    <div class="card">
-      <h2>Configuración de la rifa</h2>
-      <label for="cfgPremio">¿Qué se rifa? (puedes usar &lt;br&gt; para salto de línea)</label>
-      <input type="text" id="cfgPremio" placeholder="CADENA DE<br>ORO 18K">
-      <div class="row2">
-        <div><label for="cfgFecha">Fecha del sorteo</label><input type="text" id="cfgFecha" placeholder="19 DE JUNIO"></div>
-        <div><label for="cfgPrecio">Valor por número</label><input type="text" id="cfgPrecio" placeholder="$70.000"></div>
+  <div id="overlay" class="overlay">
+    <div class="modal">
+      <button id="btnCerrar" class="cerrar" type="button">×</button>
+      <div class="modal-titulo">RESERVAR NÚMERO</div>
+      <div id="numeroSeleccionado" class="numero-seleccionado">00</div>
+
+      <div class="campo">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" type="text" placeholder="Escribe tu nombre" autocomplete="name">
       </div>
-      <div class="row2">
-        <div><label for="cfgInicio">Número inicial</label><input type="number" id="cfgInicio" placeholder="0"></div>
-        <div><label for="cfgFin">Número final</label><input type="number" id="cfgFin" placeholder="99"></div>
-      </div>
-      <label style="display:flex;align-items:center;gap:8px;margin-top:16px;">
-        <input type="checkbox" id="cfgTelefonoObligatorio" style="width:18px;height:18px;">
-        <span style="color:var(--text-dim);font-size:14px;">Exigir número de WhatsApp del cliente</span>
-      </label>
-      <button class="btn btn-gold" id="saveConfigBtn">Guardar configuración</button>
-      <div class="msg" id="configMsg"></div>
-    </div>
 
-    <div class="card">
-      <h2>Tema de color</h2>
-      <p class="hint">Se aplica de inmediato en Admin y en la página de venta.</p>
-      <div id="temaGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;"></div>
-    </div>
-
-    <div class="card">
-      <h2>Vendedores</h2>
-      <p class="hint">Aparecen en la lista al reservar un número.</p>
-      <div id="sellerList"><div class="empty">Aún no hay vendedores.</div></div>
-      <label for="newSellerName">Nombre del vendedor</label>
-      <input type="text" id="newSellerName" placeholder="Nombre">
-      <label for="newSellerPhone">WhatsApp del vendedor (con indicativo, ej: 573001112233)</label>
-      <input type="text" id="newSellerPhone" placeholder="573001112233" inputmode="numeric">
-      <button class="btn btn-ghost" id="addSellerBtn">Agregar vendedor</button>
-    </div>
-
-    <div class="card">
-      <h2>Estadísticas por vendedor</h2>
-      <table id="statsTable">
-        <thead><tr><th>Vendedor</th><th>Total</th><th>Pagó</th><th>Abono</th><th>Separó</th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div id="statsEmpty" class="empty" style="display:none">Sin reservas todavía.</div>
-    </div>
-
-    <div class="card">
-      <h2>Números vendidos</h2>
-      <p class="hint">A quién pertenece cada número y si pagó, abonó o solo separó.</p>
-      <label for="filtroEstado">Filtrar por estado</label>
-      <select id="filtroEstado">
-        <option value="">Todos</option>
-        <option value="Pagó">Pagó</option>
-        <option value="Abono">Abono</option>
-        <option value="Solo separo">Solo separó</option>
-      </select>
-      <div style="overflow-x:auto; margin-top:12px;">
-        <table id="detalleTable">
-          <thead><tr><th>N.º</th><th>Nombre</th><th>Teléfono</th><th>Vendedor</th><th>Estado</th></tr></thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div id="detalleEmpty" class="empty" style="display:none">Sin reservas todavía.</div>
-    </div>
-
-    <div class="card">
-      <h2>Cancelar un número reservado</h2>
-      <p class="hint">Libera el número y borra su registro.</p>
-      <select id="cancelSelect"><option value="">Seleccionar número…</option></select>
-      <button class="btn btn-danger" id="cancelBtn">Cancelar número seleccionado</button>
-      <div class="msg" id="cancelMsg"></div>
-    </div>
-
-    <div class="card">
-      <h2>Exportar disponibles</h2>
-      <p class="hint">Genera una imagen o PDF para compartir por WhatsApp.</p>
-      <div class="btn-row">
-        <button class="btn btn-ghost" id="exportImgBtn">Imagen PNG</button>
-        <button class="btn btn-ghost" id="exportPdfBtn">PDF</button>
-      </div>
-      <button class="btn btn-gold" id="shareImgBtn" style="display:none">Compartir imagen (WhatsApp, Estado, etc.)</button>
-      <div class="msg" id="shareMsg"></div>
-    </div>
-  </div>
-
-</div>
-
-<div id="exportTarget" style="position:fixed; left:-9999px; top:0; width:480px;"></div>
-
-<script type="module">
-
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import {
-    getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-  import {
-    getFirestore, collection, doc, onSnapshot, setDoc, addDoc, deleteDoc
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBIq6Q9eJoJDaksUbgOODAMWXcHIYVJYSc",
-    authDomain: "yo-rifo-e6643.firebaseapp.com",
-    projectId: "yo-rifo-e6643",
-    storageBucket: "yo-rifo-e6643.firebasestorage.app",
-    messagingSenderId: "1069586862416",
-    appId: "1:1069586862416:web:99ea2d0a194f55d3bf1c55",
-    measurementId: "G-91M04K32V4"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  const $ = (id) => document.getElementById(id);
-
-  let vendedores = {};   // id -> nombre
-  let numerosData = {};  // numero -> datos
-  let rifaConfig = { rangoInicio: 0, rangoFin: 99, premio: "", fecha: "", precio: "", telefonoObligatorio: true, tema: 1 };
-  let unsubscribers = [];
-
-  /* =========================================
-     TEMAS DE COLOR (10 opciones)
-  ========================================== */
-
-  const TEMAS = {
-    1:  { nombre: "Vainilla Dorado", bg: "#fff8e7", accent: "#c9a227", accentLight: "#e8c766", border: "#c9a227", panel1: "#fff1d0", panel2: "#ffe9b8", text: "#3b2f16", textDim: "#8a7550" },
-    2:  { nombre: "Rosa Pastel",     bg: "#fff0f5", accent: "#e75480", accentLight: "#ffb6c1", border: "#e75480", panel1: "#ffe1ec", panel2: "#ffd1e0", text: "#5a1f31", textDim: "#9c6b7c" },
-    3:  { nombre: "Cielo Pastel",    bg: "#eaf6ff", accent: "#4a90d9", accentLight: "#8fc1f0", border: "#4a90d9", panel1: "#dceefb", panel2: "#c9e4f8", text: "#1f3a56", textDim: "#5e7a93" },
-    4:  { nombre: "Menta Pastel",    bg: "#eafbf3", accent: "#3fae7d", accentLight: "#82d8b4", border: "#3fae7d", panel1: "#d9f5e8", panel2: "#c4eeda", text: "#1e4a35", textDim: "#5e8873" },
-    5:  { nombre: "Lavanda Pastel",  bg: "#f3eefb", accent: "#9b7ede", accentLight: "#c6b3f0", border: "#9b7ede", panel1: "#e9e0f9", panel2: "#ded0f5", text: "#3a2c5a", textDim: "#7a6b9c" },
-    6:  { nombre: "Durazno Pastel",  bg: "#fff1e6", accent: "#e8935b", accentLight: "#f5be94", border: "#e8935b", panel1: "#ffe4cc", panel2: "#ffd7b3", text: "#5a3417", textDim: "#9c7857" },
-    7:  { nombre: "Limón Suave",     bg: "#fdfbe9", accent: "#c7b325", accentLight: "#e3d471", border: "#c7b325", panel1: "#f8f3c8", panel2: "#f2eca9", text: "#4a4418", textDim: "#8a8256" },
-    8:  { nombre: "Perla Gris",      bg: "#f3f3f3", accent: "#8c8c8c", accentLight: "#bfbfbf", border: "#8c8c8c", panel1: "#e6e6e6", panel2: "#d9d9d9", text: "#2b2b2b", textDim: "#6b6b6b" },
-    9:  { nombre: "Turquesa Suave",  bg: "#e6fbfa", accent: "#2fb6ac", accentLight: "#7fdcd4", border: "#2fb6ac", panel1: "#d2f5f2", panel2: "#beeeea", text: "#0f4844", textDim: "#4e8580" },
-    10: { nombre: "Periwinkle Suave",bg: "#eef1f8", accent: "#6c7ba6", accentLight: "#a8b3d6", border: "#6c7ba6", panel1: "#e1e5f2", panel2: "#d3d9ec", text: "#2b324a", textDim: "#6b7290" }
-  };
-
-  function aplicarTema(id) {
-    const t = TEMAS[id] || TEMAS[1];
-    const root = document.documentElement.style;
-    root.setProperty("--bg", t.bg);
-    root.setProperty("--accent", t.accent);
-    root.setProperty("--accent-light", t.accentLight);
-    root.setProperty("--border", t.border);
-    root.setProperty("--panel-1", t.panel1);
-    root.setProperty("--panel-2", t.panel2);
-    root.setProperty("--text", t.text);
-    root.setProperty("--text-dim", t.textDim);
-  }
-
-  function renderTemas() {
-    const grid = $("temaGrid");
-    grid.innerHTML = Object.keys(TEMAS).map((id) => {
-      const t = TEMAS[id];
-      const activo = Number(id) === Number(rifaConfig.tema);
-      return `<div class="tema-swatch ${activo ? "activo" : ""}" data-tema="${id}" style="background:${t.bg};border-color:${activo ? t.accent : "transparent"};">
-        <span>${t.nombre}</span>
-      </div>`;
-    }).join("");
-  }
-
-  $("temaGrid").addEventListener("click", async (e) => {
-    const swatch = e.target.closest("[data-tema]");
-    if (!swatch) return;
-    const id = parseInt(swatch.dataset.tema, 10);
-    rifaConfig.tema = id;
-    aplicarTema(id);
-    renderTemas();
-    try {
-      await setDoc(doc(db, "config", "rifa"), { tema: id }, { merge: true });
-    } catch (error) {
-      console.error(error);
-      alert("No se pudo guardar el tema. Revisa tu conexión o las reglas de Firestore.");
-    }
-  });
-
-  /* =========================================
-     LOGIN
-  ========================================== */
-
-  $("loginBtn").addEventListener("click", async () => {
-    const email = $("loginEmail").value.trim();
-    const pass = $("loginPass").value;
-    $("loginMsg").textContent = "";
-    $("loginMsg").classList.remove("error");
-    if (!email || !pass) {
-      $("loginMsg").textContent = "Escribe tu correo y contraseña.";
-      $("loginMsg").classList.add("error");
-      return;
-    }
-    try {
-      await signInWithEmailAndPassword(auth, email, pass);
-    } catch (error) {
-      console.error(error);
-      $("loginMsg").textContent = "Correo o contraseña incorrectos.";
-      $("loginMsg").classList.add("error");
-    }
-  });
-
-  $("logoutBtn").addEventListener("click", async () => {
-    await signOut(auth);
-  });
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      $("loginBox").style.display = "none";
-      $("adminBox").style.display = "block";
-      iniciarEscuchas();
-    } else {
-      $("loginBox").style.display = "block";
-      $("adminBox").style.display = "none";
-      detenerEscuchas();
-    }
-  });
-
-  function detenerEscuchas() {
-    unsubscribers.forEach((fn) => fn());
-    unsubscribers = [];
-  }
-
-  /* =========================================
-     ESCUCHAS (config, vendedores, números)
-  ========================================== */
-
-  function iniciarEscuchas() {
-    detenerEscuchas();
-
-    const refConfig = doc(db, "config", "rifa");
-    unsubscribers.push(onSnapshot(refConfig, (snap) => {
-      if (snap.exists()) {
-        const d = snap.data();
-        rifaConfig = {
-          premio: d.premio || "",
-          fecha: d.fecha || "",
-          precio: d.precio || "",
-          rangoInicio: (typeof d.rangoInicio === "number") ? d.rangoInicio : 0,
-          rangoFin: (typeof d.rangoFin === "number") ? d.rangoFin : 99,
-          telefonoObligatorio: (typeof d.telefonoObligatorio === "boolean") ? d.telefonoObligatorio : true,
-          tema: (typeof d.tema === "number") ? d.tema : 1
-        };
-      }
-      $("cfgPremio").value = rifaConfig.premio;
-      $("cfgFecha").value = rifaConfig.fecha;
-      $("cfgPrecio").value = rifaConfig.precio;
-      $("cfgInicio").value = rifaConfig.rangoInicio;
-      $("cfgFin").value = rifaConfig.rangoFin;
-      $("cfgTelefonoObligatorio").checked = rifaConfig.telefonoObligatorio;
-      aplicarTema(rifaConfig.tema);
-      renderTemas();
-    }));
-
-    const refVendedores = collection(db, "usuarios");
-    unsubscribers.push(onSnapshot(refVendedores, (snap) => {
-      vendedores = {};
-      snap.forEach((d) => {
-        const datos = d.data();
-        vendedores[d.id] = { nombre: datos.nombre || "(sin nombre)", telefono: datos.telefono || "" };
-      });
-      renderVendedores();
-      renderStats();
-      renderDetalle();
-    }));
-
-    const refNumeros = collection(db, "numeros");
-    unsubscribers.push(onSnapshot(refNumeros, (snap) => {
-      numerosData = {};
-      snap.forEach((d) => { numerosData[d.id] = d.data(); });
-      renderStats();
-      renderCancelSelect();
-      renderDetalle();
-    }));
-  }
-
-  /* =========================================
-     DETALLE DE NÚMEROS VENDIDOS
-  ========================================== */
-
-  function claseEstado(estado) {
-    if (estado === "Pagó") return "estado-pago";
-    if (estado === "Abono") return "estado-abono";
-    return "estado-separo";
-  }
-
-  function renderDetalle() {
-    const filtro = $("filtroEstado").value;
-    const nums = Object.keys(numerosData).sort();
-    const filas = nums
-      .map((n) => ({ numero: n, ...numerosData[n] }))
-      .filter((rec) => {
-        const estado = rec.tipoPago || rec.estado || "";
-        return !filtro || estado === filtro;
-      });
-
-    const tbody = document.querySelector("#detalleTable tbody");
-    tbody.innerHTML = filas.map((rec) => {
-      const estado = rec.tipoPago || rec.estado || "—";
-      const telefono = rec["Telefono completo"] || rec["Telefono"] || "—";
-      return `<tr>
-        <td>${rec.numero}</td>
-        <td>${rec.nombre || "Sin nombre"}</td>
-        <td>${telefono}</td>
-        <td>${rec.vendedorNombre || "Sin asignar"}</td>
-        <td><span class="estado-pill ${claseEstado(estado)}">${estado}</span></td>
-      </tr>`;
-    }).join("");
-
-    $("detalleEmpty").style.display = filas.length === 0 ? "block" : "none";
-  }
-
-  $("filtroEstado").addEventListener("change", renderDetalle);
-
-  /* =========================================
-     CONFIGURACIÓN
-  ========================================== */
-
-  $("saveConfigBtn").addEventListener("click", async () => {
-    const premio = $("cfgPremio").value.trim();
-    const fecha = $("cfgFecha").value.trim();
-    const precio = $("cfgPrecio").value.trim();
-    const inicio = parseInt($("cfgInicio").value, 10);
-    const fin = parseInt($("cfgFin").value, 10);
-    const telefonoObligatorio = $("cfgTelefonoObligatorio").checked;
-    const msg = $("configMsg");
-    msg.classList.remove("error");
-
-    if (!premio || !fecha || !precio || isNaN(inicio) || isNaN(fin) || fin < inicio) {
-      msg.textContent = "Revisa los datos, algo falta o el rango no es válido.";
-      msg.classList.add("error");
-      return;
-    }
-
-    try {
-      await setDoc(doc(db, "config", "rifa"), {
-        premio, fecha, precio, rangoInicio: inicio, rangoFin: fin, telefonoObligatorio
-      }, { merge: true });
-      msg.textContent = "Configuración guardada.";
-    } catch (error) {
-      console.error(error);
-      msg.textContent = "No se pudo guardar. Revisa tu conexión o las reglas de Firestore.";
-      msg.classList.add("error");
-    }
-  });
-
-  /* =========================================
-     VENDEDORES
-  ========================================== */
-
-  function renderVendedores() {
-    const ids = Object.keys(vendedores);
-    const list = $("sellerList");
-    if (ids.length === 0) {
-      list.innerHTML = '<div class="empty">Aún no hay vendedores.</div>';
-      return;
-    }
-    list.innerHTML = ids.map((id) => {
-      const v = vendedores[id];
-      const obligatorio = v.telefonoObligatorio !== false; // por defecto true
-      return `<div class="item" style="flex-direction:column;align-items:stretch;gap:6px;">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <span>${v.nombre}${v.telefono ? " · " + v.telefono : ""}</span>
-          <button class="del" data-del="${id}">🗑️</button>
+      <div class="campo">
+        <label for="telefono" id="labelTelefono">Número de WhatsApp</label>
+        <div class="telefono-container">
+          <select id="codigoPais" class="codigo-pais">
+            <option value="+57">🇨🇴 +57</option>
+            <option value="+58">🇻🇪 +58</option>
+            <option value="+593">🇪🇨 +593</option>
+            <option value="+507">🇵🇦 +507</option>
+            <option value="+51">🇵🇪 +51</option>
+            <option value="+52">🇲🇽 +52</option>
+            <option value="+54">🇦🇷 +54</option>
+            <option value="+55">🇧🇷 +55</option>
+            <option value="+56">🇨🇱 +56</option>
+            <option value="+34">🇪🇸 +34</option>
+            <option value="+1">🇺🇸 +1</option>
+            <option value="+44">🇬🇧 +44</option>
+            <option value="+33">🇫🇷 +33</option>
+            <option value="+49">🇩🇪 +49</option>
+            <option value="+39">🇮🇹 +39</option>
+          </select>
+          <input id="telefono" class="telefono-input" type="tel" inputmode="numeric" placeholder="300 123 4567" autocomplete="tel" maxlength="15">
         </div>
-        <label style="display:flex;align-items:center;gap:8px;margin:0;font-size:13px;color:var(--text-dim);">
-          <input type="checkbox" data-tel-oblig="${id}" ${obligatorio ? "checked" : ""} style="width:16px;height:16px;">
-          Exigir WhatsApp del cliente cuando venda este vendedor
-        </label>
-      </div>`;
-    }).join("");
-  }
+      </div>
 
-  $("sellerList").addEventListener("click", async (e) => {
-    const id = e.target.dataset.del;
-    if (!id) return;
-    if (confirm("¿Eliminar este vendedor?")) {
+      <div class="campo">
+        <label for="vendedor">Vendedor</label>
+        <select id="vendedor">
+          <option value="">Selecciona un vendedor</option>
+        </select>
+      </div>
+
+      <div class="campo">
+        <label for="tipoPago">Estado del pago</label>
+        <select id="tipoPago">
+          <option value="">Selecciona una opción</option>
+          <option value="Pagó">Pagó</option>
+          <option value="Abono">Abono</option>
+          <option value="Solo separo">Solo separo</option>
+        </select>
+      </div>
+
+      <button id="btnConfirmar" class="btn-confirmar" type="button" disabled>CONFIRMAR</button>
+      <div id="mensaje" class="mensaje"></div>
+    </div>
+  </div>
+
+  <script type="module">
+
+    import {
+      initializeApp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+    import {
+      getFirestore,
+      collection,
+      doc,
+      onSnapshot,
+      runTransaction,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    /* =========================================
+       CONFIGURACIÓN REAL DE TU FIREBASE
+    ========================================== */
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBIq6Q9eJoJDaksUbgOODAMWXcHIYVJYSc",
+      authDomain: "yo-rifo-e6643.firebaseapp.com",
+      projectId: "yo-rifo-e6643",
+      storageBucket: "yo-rifo-e6643.firebasestorage.app",
+      messagingSenderId: "1069586862416",
+      appId: "1:1069586862416:web:99ea2d0a194f55d3bf1c55",
+      measurementId: "G-91M04K32V4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const WHATSAPP_ADMIN = "573226082281";
+
+    const numerosContainer = document.getElementById("numeros");
+    const overlay = document.getElementById("overlay");
+    const numeroSeleccionado = document.getElementById("numeroSeleccionado");
+    const nombre = document.getElementById("nombre");
+    const codigoPais = document.getElementById("codigoPais");
+    const telefono = document.getElementById("telefono");
+    const tipoPago = document.getElementById("tipoPago");
+    const vendedorSelect = document.getElementById("vendedor");
+    const btnConfirmar = document.getElementById("btnConfirmar");
+    const btnCerrar = document.getElementById("btnCerrar");
+    const mensaje = document.getElementById("mensaje");
+
+    let numeroActual = null;
+    let procesando = false;
+    let vendedores = {}; // id -> nombre
+    let numerosData = {}; // numero -> datos de la reserva
+    let rifaConfig = { premio: "CADENA DE<br>ORO 18K", fecha: "19 DE JUNIO", precio: "$70.000", rangoInicio: 0, rangoFin: 99, telefonoObligatorio: true, tema: 1 };
+
+    /* =========================================
+       TEMAS DE COLOR (10 opciones)
+       Se elige desde Admin y se aplica aquí y allá
+       leyendo config.tema desde Firestore.
+    ========================================== */
+
+    const TEMAS = {
+      1:  { nombre: "Vainilla Dorado", bg: "#fff8e7", accent: "#c9a227", accentLight: "#e8c766", border: "#c9a227", panel1: "#fff1d0", panel2: "#ffe9b8", panel3: "#ffe4a6", text: "#3b2f16", textDim: "#8a7550" },
+      2:  { nombre: "Rosa Pastel",     bg: "#fff0f5", accent: "#e75480", accentLight: "#ffb6c1", border: "#e75480", panel1: "#ffe1ec", panel2: "#ffd1e0", panel3: "#ffc7d8", text: "#5a1f31", textDim: "#9c6b7c" },
+      3:  { nombre: "Cielo Pastel",    bg: "#eaf6ff", accent: "#4a90d9", accentLight: "#8fc1f0", border: "#4a90d9", panel1: "#dceefb", panel2: "#c9e4f8", panel3: "#bcdcf5", text: "#1f3a56", textDim: "#5e7a93" },
+      4:  { nombre: "Menta Pastel",    bg: "#eafbf3", accent: "#3fae7d", accentLight: "#82d8b4", border: "#3fae7d", panel1: "#d9f5e8", panel2: "#c4eeda", panel3: "#b3e7cf", text: "#1e4a35", textDim: "#5e8873" },
+      5:  { nombre: "Lavanda Pastel",  bg: "#f3eefb", accent: "#9b7ede", accentLight: "#c6b3f0", border: "#9b7ede", panel1: "#e9e0f9", panel2: "#ded0f5", panel3: "#d3c1f0", text: "#3a2c5a", textDim: "#7a6b9c" },
+      6:  { nombre: "Durazno Pastel",  bg: "#fff1e6", accent: "#e8935b", accentLight: "#f5be94", border: "#e8935b", panel1: "#ffe4cc", panel2: "#ffd7b3", panel3: "#ffcb9c", text: "#5a3417", textDim: "#9c7857" },
+      7:  { nombre: "Limón Suave",     bg: "#fdfbe9", accent: "#c7b325", accentLight: "#e3d471", border: "#c7b325", panel1: "#f8f3c8", panel2: "#f2eca9", panel3: "#ece58f", text: "#4a4418", textDim: "#8a8256" },
+      8:  { nombre: "Perla Gris",      bg: "#f3f3f3", accent: "#8c8c8c", accentLight: "#bfbfbf", border: "#8c8c8c", panel1: "#e6e6e6", panel2: "#d9d9d9", panel3: "#cccccc", text: "#2b2b2b", textDim: "#6b6b6b" },
+      9:  { nombre: "Turquesa Suave",  bg: "#e6fbfa", accent: "#2fb6ac", accentLight: "#7fdcd4", border: "#2fb6ac", panel1: "#d2f5f2", panel2: "#beeeea", panel3: "#a9e6e1", text: "#0f4844", textDim: "#4e8580" },
+      10: { nombre: "Periwinkle Suave",bg: "#eef1f8", accent: "#6c7ba6", accentLight: "#a8b3d6", border: "#6c7ba6", panel1: "#e1e5f2", panel2: "#d3d9ec", panel3: "#c5cde5", text: "#2b324a", textDim: "#6b7290" }
+    };
+
+    function aplicarTema(id) {
+      const t = TEMAS[id] || TEMAS[1];
+      const root = document.documentElement.style;
+      root.setProperty("--bg", t.bg);
+      root.setProperty("--accent", t.accent);
+      root.setProperty("--accent-light", t.accentLight);
+      root.setProperty("--border", t.border);
+      root.setProperty("--panel-1", t.panel1);
+      root.setProperty("--panel-2", t.panel2);
+      root.setProperty("--panel-3", t.panel3);
+      root.setProperty("--text", t.text);
+      root.setProperty("--text-dim", t.textDim);
+    }
+
+    function digitos() {
+      return Math.max(String(rifaConfig.rangoInicio).length, String(rifaConfig.rangoFin).length, 2);
+    }
+
+    /* =========================================
+       DIBUJAR LA GRILLA DE NÚMEROS
+       Se redibuja cada vez que cambia la configuración
+       (rango) o llegan nuevas reservas.
+    ========================================== */
+
+    function renderGrid() {
+      numerosContainer.innerHTML = "";
+      const cifras = digitos();
+      for (let i = rifaConfig.rangoInicio; i <= rifaConfig.rangoFin; i++) {
+        const numero = String(i).padStart(cifras, "0");
+        const boton = document.createElement("button");
+        boton.type = "button";
+        boton.className = "numero";
+        boton.textContent = numero;
+        boton.dataset.numero = numero;
+        if (numerosData[numero]) {
+          boton.classList.add("ocupado");
+          boton.disabled = true;
+        }
+        boton.addEventListener("click", () => abrirModal(numero));
+        numerosContainer.appendChild(boton);
+      }
+    }
+
+    /* =========================================
+       ESCUCHAR CONFIGURACIÓN (colección "config",
+       documento "rifa"). La define el administrador.
+       Si no existe todavía, se usan valores por defecto.
+    ========================================== */
+
+    function escucharConfig() {
+      const referencia = doc(db, "config", "rifa");
+      onSnapshot(referencia, (snap) => {
+        if (snap.exists()) {
+          const datos = snap.data();
+          rifaConfig = {
+            premio: datos.premio || rifaConfig.premio,
+            fecha: datos.fecha || rifaConfig.fecha,
+            precio: datos.precio || rifaConfig.precio,
+            rangoInicio: (typeof datos.rangoInicio === "number") ? datos.rangoInicio : rifaConfig.rangoInicio,
+            rangoFin: (typeof datos.rangoFin === "number") ? datos.rangoFin : rifaConfig.rangoFin,
+            telefonoObligatorio: (typeof datos.telefonoObligatorio === "boolean") ? datos.telefonoObligatorio : rifaConfig.telefonoObligatorio,
+            tema: (typeof datos.tema === "number") ? datos.tema : rifaConfig.tema
+          };
+        }
+        aplicarTema(rifaConfig.tema);
+        document.getElementById("tituloRifa").innerHTML = rifaConfig.premio;
+        document.getElementById("fechaSorteo").textContent = rifaConfig.fecha;
+        document.getElementById("valorNumero").textContent = rifaConfig.precio;
+        document.title = "Rifa - " + rifaConfig.fecha;
+        actualizarLabelTelefono();
+        validarFormulario();
+        renderGrid();
+      }, (error) => {
+        console.error("Error escuchando configuración:", error);
+      });
+    }
+
+    /* =========================================
+       ESCUCHAR RESERVAS EN TIEMPO REAL (corregido)
+       Antes se cargaban una sola vez con getDocs, así
+       que si otra persona reservaba mientras tu página
+       seguía abierta, no lo veías reflejado. onSnapshot
+       mantiene la grilla sincronizada en vivo.
+    ========================================== */
+
+    function escucharReservas() {
+      const referencia = collection(db, "numeros");
+      onSnapshot(referencia, (snapshot) => {
+        numerosData = {};
+        snapshot.forEach((documento) => {
+          const datos = documento.data();
+          const cifras = digitos();
+          const numero = documento.id.padStart(cifras, "0");
+          if (datos && (datos.nombre || datos.tipoPago || datos.estado)) {
+            numerosData[numero] = datos;
+          }
+        });
+        renderGrid();
+      }, (error) => {
+        console.error("Error escuchando reservas:", error);
+      });
+    }
+
+    /* =========================================
+       ESCUCHAR VENDEDORES (colección "usuarios")
+       Cada documento debe tener un campo "nombre".
+       Se crean manualmente desde la consola de Firebase.
+    ========================================== */
+
+    function escucharVendedores() {
+      const referencia = collection(db, "usuarios");
+      onSnapshot(referencia, (snapshot) => {
+        vendedores = {};
+        snapshot.forEach((documento) => {
+          const datos = documento.data();
+          if (datos && datos.nombre) {
+            vendedores[documento.id] = {
+              nombre: datos.nombre,
+              telefono: datos.telefono || "",
+              // Si el vendedor no tiene el campo definido, se usa el valor
+              // general de la rifa (rifaConfig.telefonoObligatorio).
+              telefonoObligatorio: (typeof datos.telefonoObligatorio === "boolean") ? datos.telefonoObligatorio : null
+            };
+          }
+        });
+
+        const seleccionActual = vendedorSelect.value;
+        const ids = Object.keys(vendedores);
+
+        if (ids.length === 0) {
+          vendedorSelect.innerHTML = '<option value="">No hay vendedores registrados</option>';
+        } else {
+          vendedorSelect.innerHTML = '<option value="">Selecciona un vendedor</option>' +
+            ids.map((id) => `<option value="${id}">${vendedores[id].nombre}</option>`).join("");
+          if (vendedores[seleccionActual]) {
+            vendedorSelect.value = seleccionActual;
+          }
+        }
+        actualizarLabelTelefono();
+        validarFormulario();
+      }, (error) => {
+        console.error("Error escuchando vendedores:", error);
+      });
+    }
+
+    /* =========================================
+       ¿ES OBLIGATORIO EL WHATSAPP AHORA MISMO?
+       Depende del vendedor seleccionado; si ese
+       vendedor no tiene el dato definido, se usa
+       la configuración general de la rifa.
+    ========================================== */
+
+    function telefonoEsObligatorio() {
+      const v = vendedores[vendedorSelect.value];
+      if (v && typeof v.telefonoObligatorio === "boolean") {
+        return v.telefonoObligatorio;
+      }
+      return rifaConfig.telefonoObligatorio;
+    }
+
+    function actualizarLabelTelefono() {
+      const obligatorio = telefonoEsObligatorio();
+      document.getElementById("labelTelefono").textContent = "Número de WhatsApp" + (obligatorio ? "" : " (opcional)");
+    }
+
+    vendedorSelect.addEventListener("change", () => {
+      actualizarLabelTelefono();
+      validarFormulario();
+    });
+
+    function marcarOcupado(numero) {
+      const boton = document.querySelector(`.numero[data-numero="${numero}"]`);
+      if (!boton) return;
+      boton.classList.add("ocupado");
+      boton.disabled = true;
+    }
+
+    /* =========================================
+       ABRIR / CERRAR MODAL
+    ========================================== */
+
+    function abrirModal(numero) {
+      const boton = document.querySelector(`.numero[data-numero="${numero}"]`);
+      if (!boton || boton.classList.contains("ocupado")) return;
+
+      numeroActual = numero;
+      numeroSeleccionado.textContent = numero;
+      nombre.value = "";
+      telefono.value = "";
+      codigoPais.value = "+57";
+      tipoPago.value = "";
+      vendedorSelect.value = "";
+      mensaje.textContent = "";
+      btnConfirmar.disabled = true;
+      btnConfirmar.classList.remove("activo");
+      btnConfirmar.textContent = "CONFIRMAR";
+      overlay.classList.add("activo");
+
+      setTimeout(() => { nombre.focus(); }, 150);
+    }
+
+    function cerrarModal() {
+      if (procesando) return;
+      overlay.classList.remove("activo");
+      numeroActual = null;
+    }
+
+    btnCerrar.addEventListener("click", cerrarModal);
+
+    overlay.addEventListener("click", (event) => {
+      if (event.target === overlay) cerrarModal();
+    });
+
+    /* =========================================
+       VALIDACIÓN
+    ========================================== */
+
+    telefono.addEventListener("input", () => {
+      telefono.value = telefono.value.replace(/\D/g, "");
+      validarFormulario();
+    });
+
+    nombre.addEventListener("input", validarFormulario);
+    tipoPago.addEventListener("change", validarFormulario);
+    vendedorSelect.addEventListener("change", validarFormulario);
+
+    function validarFormulario() {
+      const nombreValido = nombre.value.trim().length >= 2;
+      const telefonoValido = telefonoEsObligatorio() ? (telefono.value.trim().length >= 7) : true;
+      const pagoValido = tipoPago.value !== "";
+      const vendedorValido = vendedorSelect.value !== "";
+      const valido = nombreValido && telefonoValido && pagoValido && vendedorValido && numeroActual !== null;
+
+      btnConfirmar.disabled = !valido;
+      btnConfirmar.classList.toggle("activo", valido);
+    }
+
+    /* =========================================
+       CONFIRMAR RESERVA
+    ========================================== */
+
+    btnConfirmar.addEventListener("click", confirmarReserva);
+
+    async function confirmarReserva() {
+      if (procesando || btnConfirmar.disabled || !numeroActual) return;
+
+      procesando = true;
+      btnConfirmar.disabled = true;
+      btnConfirmar.textContent = "GUARDANDO...";
+      mensaje.textContent = "";
+
+      const numero = numeroActual;
+      const nombreCliente = nombre.value.trim();
+      const codigo = codigoPais.value;
+      const telefonoCliente = telefono.value.trim();
+      const pago = tipoPago.value;
+      const telefonoCompleto = codigo + telefonoCliente;
+      const vendedorId = vendedorSelect.value;
+      const vendedorNombre = vendedores[vendedorId] ? vendedores[vendedorId].nombre : "";
+
       try {
-        await deleteDoc(doc(db, "usuarios", id));
+        const referencia = doc(db, "numeros", numero);
+
+        await runTransaction(db, async (transaction) => {
+          const documento = await transaction.get(referencia);
+          if (documento.exists()) {
+            throw new Error("NUMERO_OCUPADO");
+          }
+          transaction.set(referencia, {
+            numero: numero,
+            nombre: nombreCliente,
+            tipoPago: pago,
+            estado: pago,
+            "Codigo de país": codigo,
+            "Telefono": telefonoCliente,
+            "Telefono completo": telefonoCompleto,
+            vendedorId: vendedorId,
+            vendedorNombre: vendedorNombre,
+            fecha: serverTimestamp()
+          });
+        });
+
+        // Éxito: abrir WhatsApp en pestaña nueva (antes navegaba
+        // fuera de la página en la misma pestaña con location.href).
+        mensaje.textContent = "¡Reserva registrada! Abriendo WhatsApp...";
+
+        const texto =
+          "Hola, quiero confirmar mi reserva.\n\n" +
+          "🎟️ Número: " + numero + "\n" +
+          "👤 Nombre: " + nombreCliente + "\n" +
+          "📱 WhatsApp: " + telefonoCompleto + "\n" +
+          "💰 Estado del pago: " + pago + "\n" +
+          "🧑‍💼 Vendedor: " + vendedorNombre + "\n\n" +
+          "Rifa Cadena de Oro 18K";
+
+        const urlWhatsApp = "https://wa.me/" + WHATSAPP_ADMIN + "?text=" + encodeURIComponent(texto);
+        window.open(urlWhatsApp, "_blank");
+
+        numeroActual = null;
+        procesando = false;
+
+        setTimeout(() => {
+          overlay.classList.remove("activo");
+          btnConfirmar.textContent = "CONFIRMAR";
+        }, 1200);
+
+      } catch (error) {
+        console.error("Error reservando:", error);
+
+        if (error.message === "NUMERO_OCUPADO") {
+          // Corregido: ya no se reactiva el botón para reintentar
+          // sobre un número que ya no está disponible. Se marca
+          // ocupado y se cierra el modal invitando a elegir otro.
+          marcarOcupado(numero);
+          mensaje.textContent = "⚠️ Este número ya fue reservado por otra persona. Elige otro.";
+          btnConfirmar.textContent = "NÚMERO OCUPADO";
+          numeroActual = null;
+          procesando = false;
+          setTimeout(() => {
+            overlay.classList.remove("activo");
+            btnConfirmar.textContent = "CONFIRMAR";
+          }, 1600);
+        } else {
+          // Error de conexión u otro: sí vale la pena reintentar.
+          mensaje.textContent = "❌ No se pudo registrar la reserva. Revisa la conexión e intenta de nuevo.";
+          btnConfirmar.disabled = false;
+          btnConfirmar.classList.add("activo");
+          btnConfirmar.textContent = "CONFIRMAR";
+          procesando = false;
+        }
+      }
+    }
+
+    /* =========================================
+       INICIAR PÁGINA
+    ========================================== */
+
+    /* =========================================
+       COMPARTIR IMAGEN DE DISPONIBLES (igual que en admin.html)
+       Abre el menú nativo del celular (WhatsApp, Estado, etc.)
+       Solo se muestra si el navegador lo soporta.
+    ========================================== */
+
+    const shareIndexBtn = document.getElementById("shareIndexBtn");
+    const shareIndexMsg = document.getElementById("shareIndexMsg");
+
+    if (navigator.canShare) {
+      shareIndexBtn.style.display = "block";
+    }
+
+    function construirExportHtml() {
+      const cifras = digitos();
+      let celdas = "";
+      for (let i = rifaConfig.rangoInicio; i <= rifaConfig.rangoFin; i++) {
+        const num = String(i).padStart(cifras, "0");
+        const ocupado = !!numerosData[num];
+        celdas += `<div style="aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+          border-radius:6px;font-weight:700;font-size:14px;font-family:Arial,sans-serif;
+          ${ocupado ? "background:#333;color:#777;text-decoration:line-through;" : "background:#050505;color:#d8af32;border:1px solid #c9a52e;"}">${num}</div>`;
+      }
+      const total = rifaConfig.rangoFin - rifaConfig.rangoInicio + 1;
+      const disponibles = total - Object.keys(numerosData).length;
+      const premioTexto = rifaConfig.premio.replace(/<br\s*\/?>/gi, " ");
+      return `<div style="width:480px;padding:22px;background:#000;font-family:Arial,sans-serif;color:#fff;">
+        <div style="color:#d8af32;font-weight:800;font-size:22px;margin-bottom:2px;">${premioTexto || "RIFA"}</div>
+        <div style="font-size:13px;color:#aaa;margin-bottom:14px;">
+          Sorteo: ${rifaConfig.fecha || "por definir"} · Valor: ${rifaConfig.precio || ""} · Disponibles: ${disponibles} de ${total}
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;">${celdas}</div>
+      </div>`;
+    }
+
+    shareIndexBtn.addEventListener("click", async () => {
+      shareIndexMsg.textContent = "Generando imagen...";
+      const target = document.getElementById("exportTarget");
+      target.innerHTML = construirExportHtml();
+      try {
+        const canvas = await html2canvas(target.firstChild, { backgroundColor: null, scale: 2 });
+        canvas.toBlob(async (blob) => {
+          const file = new File([blob], "rifa-disponibles.png", { type: "image/png" });
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+              await navigator.share({
+                files: [file],
+                title: "Números disponibles",
+                text: "ESCOGE AQUÍ TU NÚMERO\nhttps://marketingjm.github.io/rifa/"
+              });
+              shareIndexMsg.textContent = "";
+            } catch (err) {
+              // El usuario cerró el menú de compartir, no es un error.
+              shareIndexMsg.textContent = "";
+            }
+          } else {
+            shareIndexMsg.textContent = "Tu navegador no admite compartir imágenes directamente.";
+          }
+        }, "image/png");
       } catch (error) {
         console.error(error);
-        alert("No se pudo eliminar. Revisa las reglas de Firestore.");
+        shareIndexMsg.textContent = "No se pudo generar la imagen.";
       }
-    }
-  });
-
-  $("sellerList").addEventListener("change", async (e) => {
-    const id = e.target.dataset.telOblig;
-    if (!id) return;
-    try {
-      await setDoc(doc(db, "usuarios", id), { telefonoObligatorio: e.target.checked }, { merge: true });
-    } catch (error) {
-      console.error(error);
-      alert("No se pudo actualizar. Revisa las reglas de Firestore.");
-      e.target.checked = !e.target.checked;
-    }
-  });
-
-  $("addSellerBtn").addEventListener("click", async () => {
-    const name = $("newSellerName").value.trim();
-    const telefono = $("newSellerPhone").value.trim();
-    if (!name) return;
-    try {
-      await addDoc(collection(db, "usuarios"), { nombre: name, telefono: telefono, telefonoObligatorio: true });
-      $("newSellerName").value = "";
-      $("newSellerPhone").value = "";
-    } catch (error) {
-      console.error(error);
-      alert("No se pudo agregar. Revisa las reglas de Firestore.");
-    }
-  });
-
-  /* =========================================
-     ESTADÍSTICAS
-  ========================================== */
-
-  function renderStats() {
-    const stats = {};
-    Object.keys(vendedores).forEach((id) => {
-      stats[id] = { nombre: vendedores[id].nombre, total: 0, pago: 0, abono: 0, separo: 0 };
     });
 
-    Object.values(numerosData).forEach((rec) => {
-      const id = rec.vendedorId || "__sin__";
-      if (!stats[id]) stats[id] = { nombre: rec.vendedorNombre || "Sin vendedor", total: 0, pago: 0, abono: 0, separo: 0 };
-      stats[id].total++;
-      const estado = rec.tipoPago || rec.estado || "";
-      if (estado === "Pagó") stats[id].pago++;
-      else if (estado === "Abono") stats[id].abono++;
-      else if (estado === "Solo separo") stats[id].separo++;
-    });
+    escucharConfig();
+    escucharReservas();
+    escucharVendedores();
 
-    const rows = Object.values(stats);
-    const tbody = document.querySelector("#statsTable tbody");
-    tbody.innerHTML = rows.map((s) =>
-      `<tr><td>${s.nombre}</td><td>${s.total}</td><td>${s.pago}</td><td>${s.abono}</td><td>${s.separo}</td></tr>`
-    ).join("");
-    $("statsEmpty").style.display = rows.length === 0 ? "block" : "none";
-  }
+  </script>
 
-  /* =========================================
-     CANCELAR NÚMERO
-  ========================================== */
-
-  function renderCancelSelect() {
-    const sel = $("cancelSelect");
-    const nums = Object.keys(numerosData).sort();
-    sel.innerHTML = '<option value="">Seleccionar número…</option>' + nums.map((n) =>
-      `<option value="${n}">${n} — ${numerosData[n].nombre || "Sin nombre"}</option>`
-    ).join("");
-  }
-
-  $("cancelBtn").addEventListener("click", async () => {
-    const numero = $("cancelSelect").value;
-    const msg = $("cancelMsg");
-    msg.classList.remove("error");
-    if (!numero) return;
-    if (!confirm("¿Cancelar la reserva del número " + numero + "? Quedará disponible de nuevo.")) return;
-    try {
-      await deleteDoc(doc(db, "numeros", numero));
-      msg.textContent = "Número " + numero + " liberado.";
-    } catch (error) {
-      console.error(error);
-      msg.textContent = "No se pudo cancelar. Revisa las reglas de Firestore.";
-      msg.classList.add("error");
-    }
-  });
-
-  /* =========================================
-     EXPORTAR DISPONIBLES
-  ========================================== */
-
-  function digitos() {
-    return Math.max(String(rifaConfig.rangoInicio).length, String(rifaConfig.rangoFin).length, 2);
-  }
-
-  function construirExportHtml() {
-    const cifras = digitos();
-    let celdas = "";
-    for (let i = rifaConfig.rangoInicio; i <= rifaConfig.rangoFin; i++) {
-      const numero = String(i).padStart(cifras, "0");
-      const ocupado = !!numerosData[numero];
-      celdas += `<div style="aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
-        border-radius:6px;font-weight:700;font-size:14px;font-family:Arial,sans-serif;
-        ${ocupado ? "background:#333;color:#777;text-decoration:line-through;" : "background:#050505;color:#d8af32;border:1px solid #c9a52e;"}">${numero}</div>`;
-    }
-    const total = rifaConfig.rangoFin - rifaConfig.rangoInicio + 1;
-    const disponibles = total - Object.keys(numerosData).length;
-    return `<div style="width:480px;padding:22px;background:#000;font-family:Arial,sans-serif;color:#fff;">
-      <div style="color:#d8af32;font-weight:800;font-size:22px;margin-bottom:2px;">${rifaConfig.premio.replace(/<br\s*\/?>/gi, " ") || "RIFA"}</div>
-      <div style="font-size:13px;color:#aaa;margin-bottom:14px;">
-        Sorteo: ${rifaConfig.fecha || "por definir"} · Valor: ${rifaConfig.precio || ""} · Disponibles: ${disponibles} de ${total}
-      </div>
-      <div style="display:grid;grid-template-columns:repeat(10,1fr);gap:5px;">${celdas}</div>
-    </div>`;
-  }
-
-  function descargarBlob(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(() => URL.revokeObjectURL(url), 2000);
-  }
-
-  async function exportarDisponibles(tipo) {
-    const target = $("exportTarget");
-    target.innerHTML = construirExportHtml();
-    try {
-      const canvas = await html2canvas(target.firstChild, { backgroundColor: null, scale: 2 });
-      if (tipo === "image") {
-        canvas.toBlob((blob) => descargarBlob(blob, "rifa-disponibles.png"), "image/png");
-      } else {
-        const imgData = canvas.toDataURL("image/png");
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ unit: "pt", format: [canvas.width / 2 + 40, canvas.height / 2 + 40] });
-        pdf.addImage(imgData, "PNG", 20, 20, canvas.width / 2, canvas.height / 2);
-        pdf.save("rifa-disponibles.pdf");
-      }
-    } catch (error) {
-      console.error(error);
-      alert("No se pudo generar el archivo.");
-    }
-  }
-
-  $("exportImgBtn").addEventListener("click", () => exportarDisponibles("image"));
-  $("exportPdfBtn").addEventListener("click", () => exportarDisponibles("pdf"));
-
-  /* =========================================
-     COMPARTIR DIRECTO (abre el menú nativo del
-     celular: WhatsApp, Estado, etc.) Solo aparece
-     si el navegador lo soporta (Chrome/Android sí,
-     algunos otros no).
-  ========================================== */
-
-  if (navigator.canShare) {
-    $("shareImgBtn").style.display = "block";
-  }
-
-  $("shareImgBtn").addEventListener("click", async () => {
-    const msg = $("shareMsg");
-    msg.classList.remove("error");
-    msg.textContent = "Generando imagen...";
-    const target = $("exportTarget");
-    target.innerHTML = construirExportHtml();
-    try {
-      const canvas = await html2canvas(target.firstChild, { backgroundColor: null, scale: 2 });
-      canvas.toBlob(async (blob) => {
-        const file = new File([blob], "rifa-disponibles.png", { type: "image/png" });
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
-          try {
-            await navigator.share({
-              files: [file],
-              title: "Números disponibles",
-              text: "ESCOGE AQUÍ TU NÚMERO\nhttps://marketingjm.github.io/rifa/"
-            });
-            msg.textContent = "";
-          } catch (err) {
-            // El usuario canceló el menú de compartir, no es un error real.
-            msg.textContent = "";
-          }
-        } else {
-          msg.textContent = "Tu navegador no admite compartir imágenes directamente. Usa el botón 'Imagen PNG' y compártela manualmente.";
-          msg.classList.add("error");
-        }
-      }, "image/png");
-    } catch (error) {
-      console.error(error);
-      msg.textContent = "No se pudo generar la imagen.";
-      msg.classList.add("error");
-    }
-  });
-
-</script>
 </body>
 </html>
