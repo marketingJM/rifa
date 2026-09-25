@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_android/webview_flutter_android.dart';
 
 void main() {
   runApp(const RifaApp());
@@ -55,10 +56,20 @@ class _RifaHomePageState extends State<RifaHomePage> {
             _hasError = false;
           }),
           onPageFinished: (_) => setState(() => _loading = false),
-          onWebResourceError: (_) => setState(() {
-            _loading = false;
-            _hasError = true;
-          }),
+          onWebResourceError: (WebResourceError error) {
+            // Solo mostramos el bloqueo de "sin conexión" si falló la
+            // página principal, no si falló un recurso secundario
+            // (una fuente, un ícono, un script de terceros, etc.).
+            final bool esPaginaPrincipal =
+                (error is AndroidWebResourceError)
+                    ? (error.isForMainFrame ?? true)
+                    : true;
+            if (!esPaginaPrincipal) return;
+            setState(() {
+              _loading = false;
+              _hasError = true;
+            });
+          },
         ),
       )
       ..loadRequest(Uri.parse(urlIndex));
