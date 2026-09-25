@@ -10,13 +10,15 @@
 
   <style>
     :root {
-      --bg: radial-gradient(1200px 800px at 50% -10%, #241d0f, #000 65%);
-      --accent: #d8af32;
-      --accent-light: #f0c766;
-      --border: #b8912a;
-      --panel-1: #1e1810;
-      --panel-2: #141006;
-      --panel-3: #241c10;
+      --bg: #fff8e7;
+      --accent: #c9a227;
+      --accent-light: #e8c766;
+      --border: #c9a227;
+      --panel-1: #fff1d0;
+      --panel-2: #ffe9b8;
+      --panel-3: #ffe4a6;
+      --text: #3b2f16;
+      --text-dim: #8a7550;
     }
 
     * {
@@ -27,7 +29,7 @@
 
     body {
       background: var(--bg);
-      color: #fff;
+      color: var(--text);
       font-family: Arial, Helvetica, sans-serif;
       min-height: 100vh;
     }
@@ -53,7 +55,7 @@
     }
 
     .titulo {
-      color: #fff;
+      color: var(--text);
       font-size: 42px;
       font-weight: 800;
       line-height: 1.05;
@@ -79,7 +81,7 @@
     }
 
     .info-label {
-      color: #bcbcbc;
+      color: var(--text-dim);
       font-size: 19px;
       letter-spacing: 4px;
       margin-bottom: 8px;
@@ -94,7 +96,7 @@
     .selecciona {
       text-align: center;
       font-size: 22px;
-      color: #eee;
+      color: var(--text);
       margin-bottom: 25px;
     }
 
@@ -156,14 +158,14 @@
     .numero.ocupado {
       background: #333;
       border-color: #444;
-      color: #aaa;
+      color: var(--text-dim);
       cursor: not-allowed;
     }
 
     .numero.ocupado:hover {
       transform: none;
       background: #333;
-      color: #aaa;
+      color: var(--text-dim);
     }
 
     .overlay {
@@ -199,7 +201,7 @@
       top: 25px;
       border: none;
       background: transparent;
-      color: #aaa;
+      color: var(--text-dim);
       font-size: 40px;
       cursor: pointer;
       line-height: 1;
@@ -215,7 +217,7 @@
 
     .numero-seleccionado {
       text-align: center;
-      color: #fff;
+      color: var(--text);
       font-size: 88px;
       font-weight: 800;
       margin-bottom: 35px;
@@ -227,7 +229,7 @@
 
     .campo label {
       display: block;
-      color: #ddd;
+      color: var(--text-dim);
       font-size: 20px;
       margin-bottom: 10px;
     }
@@ -239,7 +241,7 @@
       background: var(--panel-2);
       border: 2px solid #555;
       border-radius: 14px;
-      color: #fff;
+      color: var(--text);
       font-size: 19px;
       padding: 0 20px;
       outline: none;
@@ -320,7 +322,7 @@
 
     .mensaje-compartir {
       text-align: center;
-      color: #999;
+      color: var(--text-dim);
       font-size: 13px;
       margin-top: 10px;
       min-height: 16px;
@@ -562,28 +564,30 @@
     ========================================== */
 
     const TEMAS = {
-      1:  { nombre: "Dorado Clásico",    bg: "#241d0f", accent: "#d8af32", accentLight: "#f0c766", border: "#b8912a", panel1: "#1e1810", panel2: "#141006", panel3: "#241c10" },
-      2:  { nombre: "Rojo Pasión",       bg: "#2b0a0e", accent: "#e63946", accentLight: "#ff6b6b", border: "#a31621", panel1: "#2a1014", panel2: "#1a0508", panel3: "#33141a" },
-      3:  { nombre: "Azul Real",         bg: "#0b1b33", accent: "#3a86ff", accentLight: "#7db4ff", border: "#1857b8", panel1: "#0f2140", panel2: "#081226", panel3: "#122a4d" },
-      4:  { nombre: "Esmeralda",         bg: "#0c2a18", accent: "#2ecc71", accentLight: "#6ee7a0", border: "#1e9e56", panel1: "#123821", panel2: "#082013", panel3: "#164426" },
-      5:  { nombre: "Morado Imperial",   bg: "#240b36", accent: "#b983ff", accentLight: "#d9bbff", border: "#8e44d8", panel1: "#301047", panel2: "#1a062a", panel3: "#3b1454" },
-      6:  { nombre: "Rosa Fiesta",       bg: "#33091e", accent: "#ff4d8d", accentLight: "#ff8db8", border: "#d81e68", panel1: "#3d0f26", panel2: "#210714", panel3: "#48132e" },
-      7:  { nombre: "Naranja Atardecer", bg: "#3a1904", accent: "#ff8c42", accentLight: "#ffb07a", border: "#e0611a", panel1: "#42200a", panel2: "#241002", panel3: "#4d2610" },
-      8:  { nombre: "Plata Elegante",    bg: "#262626", accent: "#d9d9d9", accentLight: "#ffffff", border: "#8c8c8c", panel1: "#2e2e2e", panel2: "#181818", panel3: "#383838" },
-      9:  { nombre: "Turquesa Neón",     bg: "#063a38", accent: "#00e5d0", accentLight: "#7cffef", border: "#00a896", panel1: "#0a4642", panel2: "#042523", panel3: "#0d544f" },
-      10: { nombre: "Medianoche Real",   bg: "#0e1420", accent: "#e8ecf1", accentLight: "#ffffff", border: "#7a8fa6", panel1: "#161e2c", panel2: "#0b111a", panel3: "#1c2636" }
+      1:  { nombre: "Vainilla Dorado", bg: "#fff8e7", accent: "#c9a227", accentLight: "#e8c766", border: "#c9a227", panel1: "#fff1d0", panel2: "#ffe9b8", panel3: "#ffe4a6", text: "#3b2f16", textDim: "#8a7550" },
+      2:  { nombre: "Rosa Pastel",     bg: "#fff0f5", accent: "#e75480", accentLight: "#ffb6c1", border: "#e75480", panel1: "#ffe1ec", panel2: "#ffd1e0", panel3: "#ffc7d8", text: "#5a1f31", textDim: "#9c6b7c" },
+      3:  { nombre: "Cielo Pastel",    bg: "#eaf6ff", accent: "#4a90d9", accentLight: "#8fc1f0", border: "#4a90d9", panel1: "#dceefb", panel2: "#c9e4f8", panel3: "#bcdcf5", text: "#1f3a56", textDim: "#5e7a93" },
+      4:  { nombre: "Menta Pastel",    bg: "#eafbf3", accent: "#3fae7d", accentLight: "#82d8b4", border: "#3fae7d", panel1: "#d9f5e8", panel2: "#c4eeda", panel3: "#b3e7cf", text: "#1e4a35", textDim: "#5e8873" },
+      5:  { nombre: "Lavanda Pastel",  bg: "#f3eefb", accent: "#9b7ede", accentLight: "#c6b3f0", border: "#9b7ede", panel1: "#e9e0f9", panel2: "#ded0f5", panel3: "#d3c1f0", text: "#3a2c5a", textDim: "#7a6b9c" },
+      6:  { nombre: "Durazno Pastel",  bg: "#fff1e6", accent: "#e8935b", accentLight: "#f5be94", border: "#e8935b", panel1: "#ffe4cc", panel2: "#ffd7b3", panel3: "#ffcb9c", text: "#5a3417", textDim: "#9c7857" },
+      7:  { nombre: "Limón Suave",     bg: "#fdfbe9", accent: "#c7b325", accentLight: "#e3d471", border: "#c7b325", panel1: "#f8f3c8", panel2: "#f2eca9", panel3: "#ece58f", text: "#4a4418", textDim: "#8a8256" },
+      8:  { nombre: "Perla Gris",      bg: "#f3f3f3", accent: "#8c8c8c", accentLight: "#bfbfbf", border: "#8c8c8c", panel1: "#e6e6e6", panel2: "#d9d9d9", panel3: "#cccccc", text: "#2b2b2b", textDim: "#6b6b6b" },
+      9:  { nombre: "Turquesa Suave",  bg: "#e6fbfa", accent: "#2fb6ac", accentLight: "#7fdcd4", border: "#2fb6ac", panel1: "#d2f5f2", panel2: "#beeeea", panel3: "#a9e6e1", text: "#0f4844", textDim: "#4e8580" },
+      10: { nombre: "Periwinkle Suave",bg: "#eef1f8", accent: "#6c7ba6", accentLight: "#a8b3d6", border: "#6c7ba6", panel1: "#e1e5f2", panel2: "#d3d9ec", panel3: "#c5cde5", text: "#2b324a", textDim: "#6b7290" }
     };
 
     function aplicarTema(id) {
       const t = TEMAS[id] || TEMAS[1];
       const root = document.documentElement.style;
-      root.setProperty("--bg", `radial-gradient(1200px 800px at 50% -10%, ${t.bg}, #000 65%)`);
+      root.setProperty("--bg", t.bg);
       root.setProperty("--accent", t.accent);
       root.setProperty("--accent-light", t.accentLight);
       root.setProperty("--border", t.border);
       root.setProperty("--panel-1", t.panel1);
       root.setProperty("--panel-2", t.panel2);
       root.setProperty("--panel-3", t.panel3);
+      root.setProperty("--text", t.text);
+      root.setProperty("--text-dim", t.textDim);
     }
 
     function digitos() {
