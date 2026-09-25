@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(const RifaApp());
@@ -56,6 +57,22 @@ class _RifaHomePageState extends State<RifaHomePage> {
             _hasError = false;
           }),
           onPageFinished: (_) => setState(() => _loading = false),
+          onNavigationRequest: (NavigationRequest request) async {
+            final uri = Uri.tryParse(request.url);
+            final bool esWhatsapp = request.url.contains('wa.me') ||
+                request.url.contains('api.whatsapp.com') ||
+                (uri != null && uri.scheme == 'whatsapp');
+            final bool esEsquemaEspecial =
+                uri != null && uri.scheme != 'http' && uri.scheme != 'https';
+
+            if (esWhatsapp || esEsquemaEspecial) {
+              if (uri != null && await canLaunchUrl(uri)) {
+                await launchUrl(uri, mode: LaunchMode.externalApplication);
+              }
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
           onWebResourceError: (WebResourceError error) {
             // Solo mostramos el bloqueo de "sin conexión" si falló la
             // página principal, no si falló un recurso secundario
