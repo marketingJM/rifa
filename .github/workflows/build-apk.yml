@@ -29,17 +29,33 @@ jobs:
           path = "android/app/src/main/AndroidManifest.xml"
           with open(path, "r", encoding="utf-8") as f:
               content = f.read()
+          agregado = False
           if "android.permission.INTERNET" not in content:
               content = content.replace(
                   "<application",
                   '    <uses-permission android:name="android.permission.INTERNET" />\n\n    <application',
                   1
               )
+              agregado = True
+          if "<queries>" not in content:
+              queries_block = (
+                  '    <queries>\n'
+                  '        <intent>\n'
+                  '            <action android:name="android.intent.action.VIEW" />\n'
+                  '            <data android:scheme="https" />\n'
+                  '        </intent>\n'
+                  '        <package android:name="com.whatsapp" />\n'
+                  '    </queries>\n\n'
+                  '    <application'
+              )
+              content = content.replace("<application", queries_block, 1)
+              agregado = True
+          if agregado:
               with open(path, "w", encoding="utf-8") as f:
                   f.write(content)
-              print("Permiso de Internet agregado.")
+              print("Manifest actualizado.")
           else:
-              print("El permiso ya estaba presente.")
+              print("Ya estaba todo presente.")
           EOF
 
       - name: Instalar dependencias
