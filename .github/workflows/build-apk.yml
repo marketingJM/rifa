@@ -23,6 +23,25 @@ jobs:
       - name: Agregar la carpeta android (si falta)
         run: flutter create --platforms=android .
 
+      - name: Forzar el permiso de Internet en el AndroidManifest
+        run: |
+          python3 - << 'EOF'
+          path = "android/app/src/main/AndroidManifest.xml"
+          with open(path, "r", encoding="utf-8") as f:
+              content = f.read()
+          if "android.permission.INTERNET" not in content:
+              content = content.replace(
+                  "<application",
+                  '    <uses-permission android:name="android.permission.INTERNET" />\n\n    <application',
+                  1
+              )
+              with open(path, "w", encoding="utf-8") as f:
+                  f.write(content)
+              print("Permiso de Internet agregado.")
+          else:
+              print("El permiso ya estaba presente.")
+          EOF
+
       - name: Instalar dependencias
         run: flutter pub get
 
