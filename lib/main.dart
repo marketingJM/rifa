@@ -40,6 +40,8 @@ class _RifaHomePageState extends State<RifaHomePage> {
   late final WebViewController _controller;
   int _currentTab = 0; // 0 = Vender (index), 1 = Admin
   bool _loading = true;
+  bool _hasError = false;
+  String _currentUrl = urlIndex;
 
   @override
   void initState() {
@@ -48,16 +50,31 @@ class _RifaHomePageState extends State<RifaHomePage> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-          onPageStarted: (_) => setState(() => _loading = true),
+          onPageStarted: (_) => setState(() {
+            _loading = true;
+            _hasError = false;
+          }),
           onPageFinished: (_) => setState(() => _loading = false),
+          onWebResourceError: (_) => setState(() {
+            _loading = false;
+            _hasError = true;
+          }),
         ),
       )
       ..loadRequest(Uri.parse(urlIndex));
   }
 
   void _goTo(String url, int tabIndex) {
-    setState(() => _currentTab = tabIndex);
+    setState(() {
+      _currentTab = tabIndex;
+      _currentUrl = url;
+    });
     _controller.loadRequest(Uri.parse(url));
+  }
+
+  void _reintentar() {
+    setState(() => _hasError = false);
+    _controller.loadRequest(Uri.parse(_currentUrl));
   }
 
   @override
@@ -80,6 +97,36 @@ class _RifaHomePageState extends State<RifaHomePage> {
               if (_loading)
                 const Center(
                   child: CircularProgressIndicator(color: Color(0xFFD8AF32)),
+                ),
+              if (_hasError)
+                Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.wifi_off, color: Color(0xFFD8AF32), size: 48),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'No se pudo cargar. Revisa tu conexión a internet.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.white, fontSize: 16),
+                          ),
+                          const SizedBox(height: 20),
+                          ElevatedButton(
+                            onPressed: _reintentar,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFD8AF32),
+                              foregroundColor: Colors.black,
+                            ),
+                            child: const Text('Reintentar'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
             ],
           ),
