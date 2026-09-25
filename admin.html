@@ -7,36 +7,44 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
+  :root {
+    --bg: radial-gradient(1200px 800px at 50% -10%, #241d0f, #000 65%);
+    --accent: #d8af32;
+    --accent-light: #f0c766;
+    --border: #b8912a;
+    --panel-1: #1e1810;
+    --panel-2: #141006;
+  }
   * { box-sizing: border-box; margin:0; padding:0; }
   body {
-    background:#000; color:#fff; font-family:Arial, Helvetica, sans-serif; min-height:100vh;
+    background:var(--bg); color:#fff; font-family:Arial, Helvetica, sans-serif; min-height:100vh;
   }
   .container { width:100%; max-width:640px; margin:auto; padding:30px 18px 60px; }
 
-  h1 { color:#d8af32; font-size:28px; text-align:center; margin-bottom:6px; letter-spacing:2px; }
+  h1 { color:var(--accent); font-size:28px; text-align:center; margin-bottom:6px; letter-spacing:2px; }
   .sub { text-align:center; color:#999; font-size:13px; margin-bottom:30px; }
 
   .card {
-    background:#0b0b0b; border:2px solid #c9a52e; border-radius:18px;
+    background:var(--panel-1); border:2px solid var(--border); border-radius:18px;
     padding:20px 18px; margin-bottom:20px;
   }
-  .card h2 { color:#d8af32; font-size:19px; margin-bottom:14px; font-weight:700; }
+  .card h2 { color:var(--accent); font-size:19px; margin-bottom:14px; font-weight:700; }
   .card p.hint { color:#999; font-size:13px; margin:-8px 0 14px; }
 
   label { display:block; color:#ccc; font-size:14px; margin:10px 0 5px; }
   input[type=text], input[type=number], input[type=email], input[type=password], select {
-    width:100%; height:48px; background:#050505; border:2px solid #444; border-radius:10px;
+    width:100%; height:48px; background:var(--panel-2); border:2px solid #444; border-radius:10px;
     color:#fff; font-size:15px; padding:0 14px; outline:none;
   }
-  input:focus, select:focus { border-color:#d8af32; }
+  input:focus, select:focus { border-color:var(--accent); }
   .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
   button.btn {
     width:100%; height:50px; border:none; border-radius:10px; font-size:15px; font-weight:700;
     cursor:pointer; margin-top:14px; transition:.2s;
   }
-  .btn-gold { background:#d8af32; color:#000; }
-  .btn-gold:hover { background:#e7c34b; }
+  .btn-gold { background:var(--accent); color:#000; }
+  .btn-gold:hover { background:var(--accent-light); }
   .btn-ghost { background:#1a1a1a; color:#fff; border:1px solid #444; }
   .btn-danger { background:#8a2f22; color:#fff; }
   .btn-row { display:flex; gap:8px; }
@@ -54,13 +62,20 @@
   th, td { text-align:left; padding:8px 6px; border-bottom:1px solid #222; }
   th { color:#999; font-weight:600; font-size:11px; }
 
-  .msg { text-align:center; font-size:13px; margin-top:12px; min-height:18px; color:#d8af32; }
+  .msg { text-align:center; font-size:13px; margin-top:12px; min-height:18px; color:var(--accent); }
   .msg.error { color:#e05a4a; }
 
   .estado-pill { display:inline-block; padding:3px 9px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; }
   .estado-pago { background: rgba(37,211,102,.18); color:#5fdc8f; }
-  .estado-abono { background: rgba(216,175,50,.2); color:#d8af32; }
+  .estado-abono { background: rgba(216,175,50,.2); color:var(--accent); }
   .estado-separo { background: rgba(255,255,255,.08); color:#bbb; }
+
+  .tema-swatch {
+    aspect-ratio: 1/1; border-radius:10px; cursor:pointer; border:2px solid transparent;
+    display:flex; align-items:flex-end; justify-content:center; padding:4px;
+  }
+  .tema-swatch span { font-size:9px; color:#fff; text-shadow:0 1px 2px #000; text-align:center; line-height:1.1; }
+  .tema-swatch.activo { border-color:#fff; }
 
   #loginBox { max-width:380px; margin:80px auto 0; }
   #adminBox { display:none; }
@@ -112,6 +127,12 @@
       </label>
       <button class="btn btn-gold" id="saveConfigBtn">Guardar configuración</button>
       <div class="msg" id="configMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>Tema de color</h2>
+      <p class="hint">Se aplica de inmediato en Admin y en la página de venta.</p>
+      <div id="temaGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;"></div>
     </div>
 
     <div class="card">
@@ -205,8 +226,62 @@
 
   let vendedores = {};   // id -> nombre
   let numerosData = {};  // numero -> datos
-  let rifaConfig = { rangoInicio: 0, rangoFin: 99, premio: "", fecha: "", precio: "", telefonoObligatorio: true };
+  let rifaConfig = { rangoInicio: 0, rangoFin: 99, premio: "", fecha: "", precio: "", telefonoObligatorio: true, tema: 1 };
   let unsubscribers = [];
+
+  /* =========================================
+     TEMAS DE COLOR (10 opciones)
+  ========================================== */
+
+  const TEMAS = {
+    1:  { nombre: "Dorado Clásico",    bg: "#241d0f", accent: "#d8af32", accentLight: "#f0c766", border: "#b8912a", panel1: "#1e1810", panel2: "#141006" },
+    2:  { nombre: "Rojo Pasión",       bg: "#2b0a0e", accent: "#e63946", accentLight: "#ff6b6b", border: "#a31621", panel1: "#2a1014", panel2: "#1a0508" },
+    3:  { nombre: "Azul Real",         bg: "#0b1b33", accent: "#3a86ff", accentLight: "#7db4ff", border: "#1857b8", panel1: "#0f2140", panel2: "#081226" },
+    4:  { nombre: "Esmeralda",         bg: "#0c2a18", accent: "#2ecc71", accentLight: "#6ee7a0", border: "#1e9e56", panel1: "#123821", panel2: "#082013" },
+    5:  { nombre: "Morado Imperial",   bg: "#240b36", accent: "#b983ff", accentLight: "#d9bbff", border: "#8e44d8", panel1: "#301047", panel2: "#1a062a" },
+    6:  { nombre: "Rosa Fiesta",       bg: "#33091e", accent: "#ff4d8d", accentLight: "#ff8db8", border: "#d81e68", panel1: "#3d0f26", panel2: "#210714" },
+    7:  { nombre: "Naranja Atardecer", bg: "#3a1904", accent: "#ff8c42", accentLight: "#ffb07a", border: "#e0611a", panel1: "#42200a", panel2: "#241002" },
+    8:  { nombre: "Plata Elegante",    bg: "#262626", accent: "#d9d9d9", accentLight: "#ffffff", border: "#8c8c8c", panel1: "#2e2e2e", panel2: "#181818" },
+    9:  { nombre: "Turquesa Neón",     bg: "#063a38", accent: "#00e5d0", accentLight: "#7cffef", border: "#00a896", panel1: "#0a4642", panel2: "#042523" },
+    10: { nombre: "Medianoche Real",   bg: "#0e1420", accent: "#e8ecf1", accentLight: "#ffffff", border: "#7a8fa6", panel1: "#161e2c", panel2: "#0b111a" }
+  };
+
+  function aplicarTema(id) {
+    const t = TEMAS[id] || TEMAS[1];
+    const root = document.documentElement.style;
+    root.setProperty("--bg", `radial-gradient(1200px 800px at 50% -10%, ${t.bg}, #000 65%)`);
+    root.setProperty("--accent", t.accent);
+    root.setProperty("--accent-light", t.accentLight);
+    root.setProperty("--border", t.border);
+    root.setProperty("--panel-1", t.panel1);
+    root.setProperty("--panel-2", t.panel2);
+  }
+
+  function renderTemas() {
+    const grid = $("temaGrid");
+    grid.innerHTML = Object.keys(TEMAS).map((id) => {
+      const t = TEMAS[id];
+      const activo = Number(id) === Number(rifaConfig.tema);
+      return `<div class="tema-swatch ${activo ? "activo" : ""}" data-tema="${id}" style="background:${t.bg};border-color:${activo ? t.accent : "transparent"};">
+        <span>${t.nombre}</span>
+      </div>`;
+    }).join("");
+  }
+
+  $("temaGrid").addEventListener("click", async (e) => {
+    const swatch = e.target.closest("[data-tema]");
+    if (!swatch) return;
+    const id = parseInt(swatch.dataset.tema, 10);
+    rifaConfig.tema = id;
+    aplicarTema(id);
+    renderTemas();
+    try {
+      await setDoc(doc(db, "config", "rifa"), { tema: id }, { merge: true });
+    } catch (error) {
+      console.error(error);
+      alert("No se pudo guardar el tema. Revisa tu conexión o las reglas de Firestore.");
+    }
+  });
 
   /* =========================================
      LOGIN
@@ -269,7 +344,8 @@
           precio: d.precio || "",
           rangoInicio: (typeof d.rangoInicio === "number") ? d.rangoInicio : 0,
           rangoFin: (typeof d.rangoFin === "number") ? d.rangoFin : 99,
-          telefonoObligatorio: (typeof d.telefonoObligatorio === "boolean") ? d.telefonoObligatorio : true
+          telefonoObligatorio: (typeof d.telefonoObligatorio === "boolean") ? d.telefonoObligatorio : true,
+          tema: (typeof d.tema === "number") ? d.tema : 1
         };
       }
       $("cfgPremio").value = rifaConfig.premio;
@@ -278,6 +354,8 @@
       $("cfgInicio").value = rifaConfig.rangoInicio;
       $("cfgFin").value = rifaConfig.rangoFin;
       $("cfgTelefonoObligatorio").checked = rifaConfig.telefonoObligatorio;
+      aplicarTema(rifaConfig.tema);
+      renderTemas();
     }));
 
     const refVendedores = collection(db, "usuarios");
