@@ -9,6 +9,16 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
   <style>
+    :root {
+      --bg: radial-gradient(1200px 800px at 50% -10%, #241d0f, #000 65%);
+      --accent: #d8af32;
+      --accent-light: #f0c766;
+      --border: #b8912a;
+      --panel-1: #1e1810;
+      --panel-2: #141006;
+      --panel-3: #241c10;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -16,7 +26,7 @@
     }
 
     body {
-      background: #000;
+      background: var(--bg);
       color: #fff;
       font-family: Arial, Helvetica, sans-serif;
       min-height: 100vh;
@@ -35,7 +45,7 @@
     }
 
     .rifa {
-      color: #d8af32;
+      color: var(--accent);
       font-size: 48px;
       font-weight: 800;
       letter-spacing: 12px;
@@ -61,11 +71,11 @@
     .info-box {
       width: 330px;
       max-width: 100%;
-      border: 2px solid #c9a52e;
+      border: 2px solid var(--border);
       border-radius: 18px;
       padding: 20px 15px;
       text-align: center;
-      background: #0b0b0b;
+      background: var(--panel-1);
     }
 
     .info-label {
@@ -76,7 +86,7 @@
     }
 
     .info-value {
-      color: #d8af32;
+      color: var(--accent);
       font-size: 27px;
       font-weight: bold;
     }
@@ -111,7 +121,7 @@
     }
 
     .disponible {
-      background: #d8af32;
+      background: var(--accent);
     }
 
     .ocupado {
@@ -127,10 +137,10 @@
 
     .numero {
       height: 52px;
-      border: 2px solid #c9a52e;
+      border: 2px solid var(--border);
       border-radius: 11px;
-      background: #050505;
-      color: #d8af32;
+      background: var(--panel-2);
+      color: var(--accent);
       font-size: 20px;
       font-weight: bold;
       cursor: pointer;
@@ -138,7 +148,7 @@
     }
 
     .numero:hover {
-      background: #d8af32;
+      background: var(--accent);
       color: #000;
       transform: scale(1.04);
     }
@@ -175,7 +185,7 @@
     .modal {
       width: 100%;
       max-width: 630px;
-      background: #101010;
+      background: var(--panel-3);
       border: 2px solid #d4ae36;
       border-radius: 32px;
       padding: 45px 40px 35px;
@@ -197,7 +207,7 @@
 
     .modal-titulo {
       text-align: center;
-      color: #d8af32;
+      color: var(--accent);
       font-size: 42px;
       font-weight: 400;
       margin-bottom: 25px;
@@ -226,7 +236,7 @@
     .campo select {
       width: 100%;
       height: 62px;
-      background: #050505;
+      background: var(--panel-2);
       border: 2px solid #555;
       border-radius: 14px;
       color: #fff;
@@ -237,7 +247,7 @@
 
     .campo input:focus,
     .campo select:focus {
-      border-color: #d8af32;
+      border-color: var(--accent);
     }
 
     .telefono-container {
@@ -269,12 +279,12 @@
     }
 
     .btn-confirmar.activo {
-      background: #d8af32;
+      background: var(--accent);
       color: #000;
     }
 
     .btn-confirmar.activo:hover {
-      background: #e7c34b;
+      background: var(--accent-light);
     }
 
     .btn-confirmar:disabled {
@@ -283,7 +293,7 @@
 
     .mensaje {
       text-align: center;
-      color: #d8af32;
+      color: var(--accent);
       font-size: 18px;
       margin-top: 20px;
       min-height: 25px;
@@ -295,7 +305,7 @@
       height: 58px;
       border: none;
       border-radius: 14px;
-      background: #d8af32;
+      background: var(--accent);
       color: #000;
       font-size: 18px;
       font-weight: bold;
@@ -305,7 +315,7 @@
     }
 
     .btn-compartir:hover {
-      background: #e7c34b;
+      background: var(--accent-light);
     }
 
     .mensaje-compartir {
@@ -543,7 +553,38 @@
     let procesando = false;
     let vendedores = {}; // id -> nombre
     let numerosData = {}; // numero -> datos de la reserva
-    let rifaConfig = { premio: "CADENA DE<br>ORO 18K", fecha: "19 DE JUNIO", precio: "$70.000", rangoInicio: 0, rangoFin: 99, telefonoObligatorio: true };
+    let rifaConfig = { premio: "CADENA DE<br>ORO 18K", fecha: "19 DE JUNIO", precio: "$70.000", rangoInicio: 0, rangoFin: 99, telefonoObligatorio: true, tema: 1 };
+
+    /* =========================================
+       TEMAS DE COLOR (10 opciones)
+       Se elige desde Admin y se aplica aquí y allá
+       leyendo config.tema desde Firestore.
+    ========================================== */
+
+    const TEMAS = {
+      1:  { nombre: "Dorado Clásico",    bg: "#241d0f", accent: "#d8af32", accentLight: "#f0c766", border: "#b8912a", panel1: "#1e1810", panel2: "#141006", panel3: "#241c10" },
+      2:  { nombre: "Rojo Pasión",       bg: "#2b0a0e", accent: "#e63946", accentLight: "#ff6b6b", border: "#a31621", panel1: "#2a1014", panel2: "#1a0508", panel3: "#33141a" },
+      3:  { nombre: "Azul Real",         bg: "#0b1b33", accent: "#3a86ff", accentLight: "#7db4ff", border: "#1857b8", panel1: "#0f2140", panel2: "#081226", panel3: "#122a4d" },
+      4:  { nombre: "Esmeralda",         bg: "#0c2a18", accent: "#2ecc71", accentLight: "#6ee7a0", border: "#1e9e56", panel1: "#123821", panel2: "#082013", panel3: "#164426" },
+      5:  { nombre: "Morado Imperial",   bg: "#240b36", accent: "#b983ff", accentLight: "#d9bbff", border: "#8e44d8", panel1: "#301047", panel2: "#1a062a", panel3: "#3b1454" },
+      6:  { nombre: "Rosa Fiesta",       bg: "#33091e", accent: "#ff4d8d", accentLight: "#ff8db8", border: "#d81e68", panel1: "#3d0f26", panel2: "#210714", panel3: "#48132e" },
+      7:  { nombre: "Naranja Atardecer", bg: "#3a1904", accent: "#ff8c42", accentLight: "#ffb07a", border: "#e0611a", panel1: "#42200a", panel2: "#241002", panel3: "#4d2610" },
+      8:  { nombre: "Plata Elegante",    bg: "#262626", accent: "#d9d9d9", accentLight: "#ffffff", border: "#8c8c8c", panel1: "#2e2e2e", panel2: "#181818", panel3: "#383838" },
+      9:  { nombre: "Turquesa Neón",     bg: "#063a38", accent: "#00e5d0", accentLight: "#7cffef", border: "#00a896", panel1: "#0a4642", panel2: "#042523", panel3: "#0d544f" },
+      10: { nombre: "Medianoche Real",   bg: "#0e1420", accent: "#e8ecf1", accentLight: "#ffffff", border: "#7a8fa6", panel1: "#161e2c", panel2: "#0b111a", panel3: "#1c2636" }
+    };
+
+    function aplicarTema(id) {
+      const t = TEMAS[id] || TEMAS[1];
+      const root = document.documentElement.style;
+      root.setProperty("--bg", `radial-gradient(1200px 800px at 50% -10%, ${t.bg}, #000 65%)`);
+      root.setProperty("--accent", t.accent);
+      root.setProperty("--accent-light", t.accentLight);
+      root.setProperty("--border", t.border);
+      root.setProperty("--panel-1", t.panel1);
+      root.setProperty("--panel-2", t.panel2);
+      root.setProperty("--panel-3", t.panel3);
+    }
 
     function digitos() {
       return Math.max(String(rifaConfig.rangoInicio).length, String(rifaConfig.rangoFin).length, 2);
@@ -591,9 +632,11 @@
             precio: datos.precio || rifaConfig.precio,
             rangoInicio: (typeof datos.rangoInicio === "number") ? datos.rangoInicio : rifaConfig.rangoInicio,
             rangoFin: (typeof datos.rangoFin === "number") ? datos.rangoFin : rifaConfig.rangoFin,
-            telefonoObligatorio: (typeof datos.telefonoObligatorio === "boolean") ? datos.telefonoObligatorio : rifaConfig.telefonoObligatorio
+            telefonoObligatorio: (typeof datos.telefonoObligatorio === "boolean") ? datos.telefonoObligatorio : rifaConfig.telefonoObligatorio,
+            tema: (typeof datos.tema === "number") ? datos.tema : rifaConfig.tema
           };
         }
+        aplicarTema(rifaConfig.tema);
         document.getElementById("tituloRifa").innerHTML = rifaConfig.premio;
         document.getElementById("fechaSorteo").textContent = rifaConfig.fecha;
         document.getElementById("valorNumero").textContent = rifaConfig.precio;
@@ -787,7 +830,7 @@
       const pago = tipoPago.value;
       const telefonoCompleto = codigo + telefonoCliente;
       const vendedorId = vendedorSelect.value;
-      const vendedorNombre = vendedores[vendedorId] || "";
+      const vendedorNombre = vendedores[vendedorId] ? vendedores[vendedorId].nombre : "";
 
       try {
         const referencia = doc(db, "numeros", numero);
